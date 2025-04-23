@@ -1,0 +1,42 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.0.0
+MinimumVisualStudioVersion = 17.8.0.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSK.AppHost", "PSK.AppHost\PSK.AppHost.csproj", "{F6150462-D8AD-4BE0-A7A8-A069F807A7A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSK.ServiceDefaults", "PSK.ServiceDefaults\PSK.ServiceDefaults.csproj", "{19C6AB63-BA74-4325-AC07-9BB8B18DB44D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSK.ApiService", "PSK.ApiService\PSK.ApiService.csproj", "{D6D26E4B-34C4-4619-A40E-EC003F259CD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSK.MigrationService", "PSK.MigrationService\PSK.MigrationService.csproj", "{69971498-802B-4321-B04E-0DC09B56DB17}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F6150462-D8AD-4BE0-A7A8-A069F807A7A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6150462-D8AD-4BE0-A7A8-A069F807A7A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6150462-D8AD-4BE0-A7A8-A069F807A7A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6150462-D8AD-4BE0-A7A8-A069F807A7A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19C6AB63-BA74-4325-AC07-9BB8B18DB44D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C6AB63-BA74-4325-AC07-9BB8B18DB44D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19C6AB63-BA74-4325-AC07-9BB8B18DB44D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19C6AB63-BA74-4325-AC07-9BB8B18DB44D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D26E4B-34C4-4619-A40E-EC003F259CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6D26E4B-34C4-4619-A40E-EC003F259CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6D26E4B-34C4-4619-A40E-EC003F259CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6D26E4B-34C4-4619-A40E-EC003F259CD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69971498-802B-4321-B04E-0DC09B56DB17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69971498-802B-4321-B04E-0DC09B56DB17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69971498-802B-4321-B04E-0DC09B56DB17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69971498-802B-4321-B04E-0DC09B56DB17}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CDB50090-0966-410C-ADCB-004101905D90}
+	EndGlobalSection
+EndGlobal

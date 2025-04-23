@@ -1,0 +1,6 @@
+@PSK.ApiService_HostAddress = http://localhost:5041
+
+GET {{PSK.ApiService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
