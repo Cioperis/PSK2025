@@ -1,11 +1,19 @@
 using Aspire.Hosting;
+using Aspire.Hosting.Postgres;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddProject<Projects.PSK_ApiService>("api")
-       .WithExternalHttpEndpoints();
+var postgres = builder.AddPostgres("postgres")
+    .WithDataVolume()
+    .WithPgWeb();
 
-builder.AddProject<Projects.PSK_MigrationService>("migrations");
+var postgresdb = postgres.AddDatabase("postgresdb");
+
+builder.AddProject<Projects.PSK_MigrationService>("migrations")
+    .WithReference(postgresdb);
+
+builder.AddProject<Projects.PSK_ApiService>("api")
+    .WithReference(postgresdb);
 
 builder.AddNpmApp("reactvite", "../PSK.Web");
 
