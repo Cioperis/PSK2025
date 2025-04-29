@@ -2,10 +2,6 @@
 
 namespace PSK.ApiService.Repositories.Interfaces;
 
-public interface ICommentRepository
+public interface ICommentRepository : IBaseRepository<Comment>
 {
-    Task<Comment> GetCommentByIdAsync(string commentId);
-    Task<List<Comment>> GetAllCommentsAsync();
-    Task<Comment> AddCommentAsync(Comment comment);
-    Task DeleteCommentAsync(Comment comment);
 }

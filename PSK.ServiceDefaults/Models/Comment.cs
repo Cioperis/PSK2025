@@ -2,10 +2,12 @@
 
 namespace PSK.ServiceDefaults.Models;
 
-public class Comment
+public class Comment : BaseClass
 {
     public required string Content {get; set;}
     
+    public required Guid DiscussionId {get; set;}
+    
     [ForeignKey("DiscussionId")]
-    public required Discussion Discussion {get; set;}
+    public Discussion Discussion {get; set;}
 }

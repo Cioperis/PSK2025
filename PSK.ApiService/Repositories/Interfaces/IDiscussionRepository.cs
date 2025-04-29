@@ -2,10 +2,6 @@
 
 namespace PSK.ApiService.Repositories.Interfaces;
 
-public interface IDiscussionRepository
+public interface IDiscussionRepository : IBaseRepository<Discussion>
 {
-    Task<Discussion?> GetDiscussionByIdAsync(Guid discussionId);
-    Task<List<Discussion?>> GetAllDiscussionsAsync();
-    Task<Discussion> AddDiscussionAsync(Discussion discussion);
-    Task DeleteDiscussionAsync(Discussion discussion);
 }

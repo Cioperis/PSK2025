@@ -3,5 +3,6 @@
 public class Discussion : BaseClass
 {
     public required string Name {get; set;}
-    public List<Comment>? Comments {get; set;}
+    
+    public ICollection<Comment>? Comments {get; set;}
 }
