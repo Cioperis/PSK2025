@@ -1,10 +1,11 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PSK.ApiService.Data;
+using PSK.ApiService.Repositories.Interfaces;
 
 namespace PSK.ApiService.Repositories;
 
-public class BaseRepository<T> where T : class
+public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     protected readonly AppDbContext _context;
 
@@ -46,6 +47,11 @@ public class BaseRepository<T> where T : class
     public void Add(T entity)
     {
         _context.Set<T>().Add(entity);
+    }
+    
+    public async Task AddAsync(T entity)
+    {
+        await _context.Set<T>().AddAsync(entity);
     }
 
     public void AddRange(IEnumerable<T> entities)
