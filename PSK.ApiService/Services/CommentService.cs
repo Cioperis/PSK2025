@@ -7,22 +7,30 @@ namespace PSK.ApiService.Services;
 
 public class CommentService : ICommentService
 {
-    private readonly ICommentRepository _repository;
+    private readonly ICommentRepository _commentRepository;
+    private readonly IDiscussionRepository _discussionRepository;
 
-    CommentService(ICommentRepository repository)
+    public CommentService(ICommentRepository commentRepository, IDiscussionRepository discussionRepository)
     {
-        _repository = repository;
+        _commentRepository = commentRepository;
+        _discussionRepository = discussionRepository;
     }
     
     public async Task<CommentDTO> CreateCommentAsync(CommentDTO comment)
     {
+        Discussion? discussion = await _discussionRepository.GetByIdAsync(comment.DiscussionId);
+        if (discussion == null)
+            throw new Exception($"Comment's parent Discussion {comment.DiscussionId} not found");
+        
         Comment newComment = new Comment
         {
             Content = comment.Content,
-            DiscussionId = comment.DiscussionId
+            DiscussionId = comment.DiscussionId,
+            Discussion = discussion
         };
         
-        await _repository.AddAsync(newComment);
+        await _commentRepository.AddAsync(newComment);
+        await _commentRepository.SaveChangesAsync();
         return new CommentDTO
         {
             Id = newComment.Id,
@@ -33,7 +41,7 @@ public class CommentService : ICommentService
 
     public async Task<CommentDTO?> GetCommentAsync(Guid commentId)
     {
-        Comment? comment = await _repository.GetByIdAsync(commentId);
+        Comment? comment = await _commentRepository.GetByIdAsync(commentId);
         
         if  (comment == null)
             return null;
@@ -48,7 +56,7 @@ public class CommentService : ICommentService
 
     public async Task<IEnumerable<CommentDTO>> GetAllCommentsAsync()
     {
-        IEnumerable<Comment> comments = await _repository.GetAllAsync();
+        IEnumerable<Comment> comments = await _commentRepository.GetAllAsync();
         
         return comments.Select(comment => new CommentDTO
         {
@@ -60,11 +68,12 @@ public class CommentService : ICommentService
 
     public async Task DeleteCommentAsync(Guid commentId)
     {
-        Comment? comment = await _repository.GetByIdAsync(commentId);
+        Comment? comment = await _commentRepository.GetByIdAsync(commentId);
         
         if (comment == null)
             throw new Exception($"Comment {commentId} not found");
         
-        _repository.Remove(comment);
+        _commentRepository.Remove(comment);
+        await _commentRepository.SaveChangesAsync();
     }
 }

@@ -7,22 +7,22 @@ namespace PSK.ApiService.Services;
 
 public class DiscussionService : IDiscussionService
 {
-    private readonly IDiscussionRepository _repository;
+    private readonly IDiscussionRepository _discussionRepository;
 
-    public DiscussionService(IDiscussionRepository repository)
+    public DiscussionService(IDiscussionRepository discussionRepository)
     {
-        _repository = repository;
+        _discussionRepository = discussionRepository;
     }
     
     public async Task<DiscussionDTO> CreateDiscussionAsync(DiscussionDTO discussion)
     {
         Discussion newDiscussion = new Discussion
         {
-            Id = discussion.Id,
             Name = discussion.Name
         };
         
-        await _repository.AddAsync(newDiscussion);
+        await _discussionRepository.AddAsync(newDiscussion);
+        await _discussionRepository.SaveChangesAsync();
         return new DiscussionDTO
         {
             Id = newDiscussion.Id,
@@ -32,7 +32,7 @@ public class DiscussionService : IDiscussionService
 
     public async Task<IEnumerable<DiscussionDTO>> GetAllDiscussionsAsync()
     {
-        IEnumerable<Discussion> discussions = await _repository.GetAllAsync();
+        IEnumerable<Discussion> discussions = await _discussionRepository.GetAllAsync();
 
         return discussions.Select(discussion => new DiscussionDTO
         {
@@ -43,7 +43,7 @@ public class DiscussionService : IDiscussionService
 
     public async Task<DiscussionDTO?> GetDiscussionAsync(Guid discussionId)
     {
-        Discussion? discussion = await _repository.GetByIdAsync(discussionId);
+        Discussion? discussion = await _discussionRepository.GetByIdAsync(discussionId);
 
         if (discussion == null)
             return null;
@@ -57,11 +57,12 @@ public class DiscussionService : IDiscussionService
 
     public async Task DeleteDiscussionAsync(Guid discussionId)
     {
-        Discussion? discussion = await _repository.GetByIdAsync(discussionId);
+        Discussion? discussion = await _discussionRepository.GetByIdAsync(discussionId);
         
         if  (discussion == null)
             throw new Exception($"Discussion {discussionId} not found");
         
-        _repository.Remove(discussion);
+        _discussionRepository.Remove(discussion);
+        await _discussionRepository.SaveChangesAsync();
     }
 }

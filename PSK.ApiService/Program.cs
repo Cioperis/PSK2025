@@ -13,6 +13,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IDiscussionService, DiscussionService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
