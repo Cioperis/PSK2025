@@ -2,7 +2,7 @@
 
 namespace PSK.ApiService.Repositories.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IBaseRepository<User>
     {
         Task AddUserAsync(User user);
     }
