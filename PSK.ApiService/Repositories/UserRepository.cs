@@ -10,8 +10,8 @@ namespace PSK.ApiService.Repositories
 
         public async Task AddUserAsync(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await AddAsync(user);
+            await SaveChangesAsync();
         }
     }
 }
