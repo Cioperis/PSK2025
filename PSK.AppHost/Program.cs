@@ -25,6 +25,9 @@ try
     // Add Serilog to the builder if supported
     var logging = builder.Services.AddSerilog();
 
+    var rabbitMQ = builder.AddRabbitMQ("rabbitmq")
+        .WithManagementPlugin();
+
     var postgres = builder.AddPostgres("postgres")
         .WithDataVolume()
         .WithPgWeb();
@@ -35,7 +38,12 @@ try
         .WithReference(postgresdb);
 
     builder.AddProject<Projects.PSK_ApiService>("api")
+        .WithReference(postgresdb)
+        .WithReference(rabbitMQ);
+
+    builder.AddProject<Projects.PSK_AutoMessageService>("autoMessages")
         .WithReference(postgresdb);
+        //.WithReference(rabbitMQ);
 
     builder.AddNpmApp("reactvite", "../PSK.Web");
 

@@ -28,10 +28,14 @@ try
 
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IAutoMessageRepository, AutoMessageRepository>();
+    builder.Services.AddScoped<IAutoMessageService, AutoMessageService>();
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
+    builder.AddRabbitMQClient("rabbitmq");
 
     var app = builder.Build();
 

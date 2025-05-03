@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
+using RabbitMQ.Client;
 using Serilog;
+using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PSK.ApiService.Controllers
 {
@@ -11,9 +14,25 @@ namespace PSK.ApiService.Controllers
     {
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IConnection rabbitConnection)
         {
             _userService = userService;
+
+            var channel = rabbitConnection.CreateModel();
+
+
+            channel.QueueDeclare(queue: "catalogEvents",
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+
+            var body = Encoding.UTF8.GetBytes("Getting all items in the catalog.");
+
+            channel.BasicPublish(exchange: string.Empty,
+                routingKey: "catalogEvents",
+                basicProperties: null,
+                body: body);
         }
 
         [HttpPost("CreateUser")]
