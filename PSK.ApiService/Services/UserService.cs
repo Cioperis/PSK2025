@@ -26,7 +26,7 @@ namespace PSK.ApiService.Services
                 LastLogin = DateTime.UtcNow
             };
 
-            await _repository.AddUserAsync(user);
+            await _repository.AddAsync(user);
         }
     }
 }

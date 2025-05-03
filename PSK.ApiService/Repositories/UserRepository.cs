@@ -7,11 +7,5 @@ namespace PSK.ApiService.Repositories
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
         public UserRepository(AppDbContext context) : base(context) {}
-
-        public async Task AddUserAsync(User user)
-        {
-            await AddAsync(user);
-            await SaveChangesAsync();
-        }
     }
 }
