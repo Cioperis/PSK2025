@@ -33,7 +33,7 @@ namespace PSK.ApiService.Controllers
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "An error occurred while creating a user: {@UserDTO}", dto);
+                Log.Error(ex, "An error occurred while creating a user: {@UserDTO}", dto);
                 return StatusCode(500, new { message = "An error occurred while creating the user" });
             }
         }
