@@ -4,6 +4,7 @@ using PSK.ApiService.Repositories.Interfaces;
 using PSK.ApiService.Repositories;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ApiService.Services;
+using PSK.ApiService.Chatting;
 using Serilog;
 using Serilog.Events;
 using PSK.ApiService.Messaging.Interfaces;
@@ -24,10 +25,9 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+
     builder.Host.UseSerilog();
-
     builder.AddNpgsqlDbContext<AppDbContext>(connectionName: "postgresdb");
-
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IAutoMessageRepository, AutoMessageRepository>();
@@ -36,6 +36,7 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddSignalR();
 
     builder.AddRabbitMQClient("rabbitmq");
     builder.Services.AddSingleton<IRabbitMQueue, RabbitMQueue>();
@@ -50,6 +51,7 @@ try
         context.Response.Redirect("/swagger");
         return Task.CompletedTask;
     });
+    app.MapHub<ChatHub>("/chatHub");
 
     app.UseHttpsRedirection();
     app.UseAuthorization();
