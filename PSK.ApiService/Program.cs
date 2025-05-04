@@ -32,7 +32,6 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IAutoMessageRepository, AutoMessageRepository>();
     builder.Services.AddScoped<IAutoMessageService, AutoMessageService>();
-
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
