@@ -5,54 +5,97 @@ namespace PSK.ApiService.Chatting;
 
 public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
 {
-    private static readonly ConcurrentDictionary<string, List<string>> _chatGroups = new();
+    private static readonly ConcurrentQueue<string> helperQueue = new();
+    private static readonly ConcurrentQueue<string> patientQueue = new();
+    private static readonly ConcurrentDictionary<string, List<string>> chatGroups = new();
+    private static readonly SemaphoreSlim _matchingLock = new(1, 1);
 
-    public async Task JoinChat(string chatId)
+    public override async Task OnConnectedAsync()
     {
-
-        if (_chatGroups.Where(kvp => kvp.Value.Contains(Context.ConnectionId)).Any() || (_chatGroups.ContainsKey(chatId) && _chatGroups[chatId].Count >= 2)){
+        var httpContext = Context.GetHttpContext();
+        if (!httpContext!.Request.Query.TryGetValue("userType", out var userType))
+        {
+            await ImmediateDisconnect("Missing userType parameter");
             return;
         }
 
-        if (!_chatGroups.TryGetValue(chatId, out _))
+        if (!Enum.TryParse<UserType>(userType, out var type))
         {
-            var groupUsers = new List<string> {Context.ConnectionId};
-            _chatGroups[chatId] = groupUsers;
+            await ImmediateDisconnect($"Invalid userType. Valid values: {string.Join(",", Enum.GetNames<UserType>())}");
+            return;
         }
+
+        await base.OnConnectedAsync();
+
+        if (type == UserType.Helper)
+            helperQueue.Enqueue(Context.ConnectionId);
         else
-        {
-            _chatGroups[chatId].Add(Context.ConnectionId);
-        }
+            patientQueue.Enqueue(Context.ConnectionId);
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
-        await Clients.Caller.ReceiveSystemMessage($"You joined chat {chatId}", DateTime.UtcNow);
+        await Clients.Caller.ReceiveSystemMessage($"You have been put into the {type} queue", DateTime.Now);
+        await TryMatchPairs();
+    }
 
-        if (_chatGroups[chatId].Count > 1)
+    private async Task ImmediateDisconnect(string errorMessage)
+    {
+        //maybe log this???
+        await Clients.Caller.ReceiveSystemMessage(errorMessage, DateTime.Now);
+
+        Context.Abort();
+    }
+
+    private async Task TryMatchPairs()
+    {
+        await _matchingLock.WaitAsync();
+
+        try
         {
-            await Clients.OthersInGroup(chatId).ReceiveSystemMessage($"Another user joined chat {chatId}", DateTime.UtcNow);
+            while (helperQueue.TryPeek(out var helper) &&
+                   patientQueue.TryPeek(out var patient))
+            {
+                if (!IsConnectionActive(helper)) { helperQueue.TryDequeue(out _); continue; }
+                if (!IsConnectionActive(patient)) { patientQueue.TryDequeue(out _); continue; }
+
+                var chatId = Guid.NewGuid().ToString();
+                chatGroups[chatId] = new List<string> { helper, patient };
+
+                await Task.WhenAll(
+                    Groups.AddToGroupAsync(helper, chatId),
+                    Groups.AddToGroupAsync(patient, chatId),
+                    Clients.Client(helper).ReceiveChatId(chatId),
+                    Clients.Client(patient).ReceiveChatId(chatId),
+                    Clients.Client(helper).ReceiveSystemMessage("Connected to patient", DateTime.Now),
+                    Clients.Client(patient).ReceiveSystemMessage("Connected to helper", DateTime.Now)
+                );
+
+                helperQueue.TryDequeue(out _);
+                patientQueue.TryDequeue(out _);
+            }
         }
+        finally
+        {
+            _matchingLock.Release();
+        }
+    }
+
+    private bool IsConnectionActive(string connectionId)
+    {
+        return Clients.Client(connectionId) != null;
     }
 
     public async Task SendMessage(string chatId, string msg)
     {
-        if (_chatGroups.ContainsKey(chatId) && _chatGroups[chatId].Contains(Context.ConnectionId))
+        if (!chatGroups.ContainsKey(chatId))
         {
-            await Clients.OthersInGroup(chatId).ReceiveMessage(Context.ConnectionId, msg, DateTime.UtcNow);
+            await Clients.Caller.ReceiveSystemMessage("The provided chat room does not exist", DateTime.Now);
         }
-    }
-
-    public async Task LeaveChat()
-    {
-        var chat = _chatGroups.FirstOrDefault(kvp => kvp.Value.Contains(Context.ConnectionId));
-        if (chat.Key == null || !_chatGroups.TryGetValue(chat.Key, out var users)) return;
-        _chatGroups.TryRemove(chat.Key, out _);
-        await Groups.RemoveFromGroupAsync(chat.Key, Context.ConnectionId);
-
-        var otherUser = users.FirstOrDefault(u => u != Context.ConnectionId);
-        if (otherUser != null) 
+        else if (!chatGroups[chatId].Contains(Context.ConnectionId))
         {
-            await Clients.Client(otherUser).ReceiveSystemMessage("Bro left", DateTime.UtcNow);
-            await Groups.RemoveFromGroupAsync(chat.Key, otherUser);
+            await Clients.Caller.ReceiveSystemMessage("You do not belong in this chat room", DateTime.Now);
+        }
+        else
+        {
+            await Clients.OthersInGroup(chatId).ReceiveMessage(Context.ConnectionId, msg, DateTime.Now);
         }
     }
 
@@ -64,7 +107,19 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
             {
                 // Log error
             }
-            await LeaveChat();
+
+            var chat = chatGroups.FirstOrDefault(kvp => kvp.Value.Contains(Context.ConnectionId));
+            if (chat.Key != null && chatGroups.TryRemove(chat.Key, out var users))
+            {
+                var otherUser = users.FirstOrDefault(u => u != Context.ConnectionId);
+                if (otherUser != null)
+                {
+                    await Task.WhenAll(
+                            Clients.Client(otherUser).ReceiveSystemMessage("Chat ended", DateTime.Now),
+                            Clients.Client(otherUser).ForceDisconnect()
+                        );
+                }
+            }
         }
         finally
         {
