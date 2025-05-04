@@ -38,7 +38,6 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
 
     private async Task ImmediateDisconnect(string errorMessage)
     {
-        //maybe log this???
         await Clients.Caller.ReceiveSystemMessage(errorMessage, DateTime.Now);
 
         Context.Abort();
@@ -61,9 +60,15 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
 
                 await Task.WhenAll(
                     Groups.AddToGroupAsync(helper, chatId),
-                    Groups.AddToGroupAsync(patient, chatId),
+                    Groups.AddToGroupAsync(patient, chatId)
+                );
+
+                await Task.WhenAll(
                     Clients.Client(helper).ReceiveChatId(chatId),
-                    Clients.Client(patient).ReceiveChatId(chatId),
+                    Clients.Client(patient).ReceiveChatId(chatId)
+                );
+
+                await Task.WhenAll(
                     Clients.Client(helper).ReceiveSystemMessage("Connected to patient", DateTime.Now),
                     Clients.Client(patient).ReceiveSystemMessage("Connected to helper", DateTime.Now)
                 );
@@ -105,7 +110,7 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
         {
             if (exception != null)
             {
-                // Log error
+                // Log error probably
             }
 
             var chat = chatGroups.FirstOrDefault(kvp => kvp.Value.Contains(Context.ConnectionId));
