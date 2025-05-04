@@ -26,7 +26,7 @@ try
     var logging = builder.Services.AddSerilog();
 
     var rabbitMQ = builder.AddRabbitMQ("rabbitmq")
-        .WithManagementPlugin();
+        .WithManagementPlugin(port: 15672);
 
     var postgres = builder.AddPostgres("postgres")
         .WithDataVolume()
@@ -39,11 +39,12 @@ try
 
     builder.AddProject<Projects.PSK_ApiService>("api")
         .WithReference(postgresdb)
-        .WithReference(rabbitMQ);
+        .WithReference(rabbitMQ)
+        .WaitFor(rabbitMQ);
 
     builder.AddProject<Projects.PSK_AutoMessageService>("autoMessages")
-        .WithReference(postgresdb);
-        //.WithReference(rabbitMQ);
+        .WithReference(rabbitMQ)
+        .WaitFor(rabbitMQ);
 
     builder.AddNpmApp("reactvite", "../PSK.Web");
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 using RabbitMQ.Client;
@@ -13,26 +14,12 @@ namespace PSK.ApiService.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IRabbitMQueue _rabbitMQ;
 
-        public UserController(IUserService userService, IConnection rabbitConnection)
+        public UserController(IUserService userService, IRabbitMQueue rabbitMQueue)
         {
             _userService = userService;
-
-            var channel = rabbitConnection.CreateModel();
-
-
-            channel.QueueDeclare(queue: "catalogEvents",
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null);
-
-            var body = Encoding.UTF8.GetBytes("Getting all items in the catalog.");
-
-            channel.BasicPublish(exchange: string.Empty,
-                routingKey: "catalogEvents",
-                basicProperties: null,
-                body: body);
+            _rabbitMQ = rabbitMQueue;
         }
 
         [HttpPost("CreateUser")]
@@ -47,6 +34,17 @@ namespace PSK.ApiService.Controllers
             try
             {
                 await _userService.CreateUserAsync(dto);
+
+                _rabbitMQ.PublishMessage(
+                    queue: "user.created",
+                    message: System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        email = dto.Email,
+                        name = $"{dto.FirstName} {dto.LastName}",
+                        timestamp = DateTime.UtcNow
+                    })
+                );
+
                 Log.Information("User created successfully: {@UserDTO}", dto);
                 return Ok(new { message = "User created successfully" });
             }
