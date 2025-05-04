@@ -5,37 +5,58 @@ using PSK.ApiService.Repositories;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ApiService.Services;
 using PSK.ApiService.Chatting;
+using Serilog;
+using Serilog.Events;
 
+// ./bin/debug/net9.0/PSK.ApiService
+string basePath = AppContext.BaseDirectory;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File($"{basePath}/Logging/Logs.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-builder.AddNpgsqlDbContext<AppDbContext>(connectionName: "postgresdb");
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
-
-
-var app = builder.Build();
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.MapGet("/", context =>
+try
 {
-    context.Response.Redirect("/swagger");
-    return Task.CompletedTask;
-});
-app.MapHub<ChatHub>("/chatHub");
+    var builder = WebApplication.CreateBuilder(args);
 
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
+    builder.Host.UseSerilog();
+    builder.AddNpgsqlDbContext<AppDbContext>(connectionName: "postgresdb");
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    builder.Services.AddSignalR();
 
-app.MapControllers();
+    var app = builder.Build();
 
-app.Run();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    app.MapGet("/", context =>
+    {
+        context.Response.Redirect("/swagger");
+        return Task.CompletedTask;
+    });
+    app.MapHub<ChatHub>("/chatHub");
+
+    app.UseHttpsRedirection();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application startup failed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

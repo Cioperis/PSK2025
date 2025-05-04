@@ -1,20 +1,55 @@
 using Aspire.Hosting;
 using Aspire.Hosting.Postgres;
+using Serilog;
+using Serilog.Events;
+using System;
 
-var builder = DistributedApplication.CreateBuilder(args);
+// ./bin/debug/net9.0/PSK.AppHost
+// idea is to have logs in the same directory for everyone
+string basePath = AppContext.BaseDirectory;
 
-var postgres = builder.AddPostgres("postgres")
-    .WithDataVolume()
-    .WithPgWeb();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File($"{basePath}/Logging/Logs.log", rollingInterval: RollingInterval.Day)
+   .CreateLogger();
 
-var postgresdb = postgres.AddDatabase("postgresdb");
+try
+{
+    Log.Information("Starting PSK AppHost");
 
-builder.AddProject<Projects.PSK_MigrationService>("migrations")
-    .WithReference(postgresdb);
+    var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddProject<Projects.PSK_ApiService>("api")
-    .WithReference(postgresdb);
+    // Add Serilog to the builder if supported
+    var logging = builder.Services.AddSerilog();
 
-builder.AddNpmApp("reactvite", "../PSK.Web");
+    var postgres = builder.AddPostgres("postgres")
+        .WithDataVolume()
+        .WithPgWeb();
 
-builder.Build().Run();
+    var postgresdb = postgres.AddDatabase("postgresdb");
+
+    builder.AddProject<Projects.PSK_MigrationService>("migrations")
+        .WithReference(postgresdb);
+
+    builder.AddProject<Projects.PSK_ApiService>("api")
+        .WithReference(postgresdb);
+
+    builder.AddNpmApp("reactvite", "../PSK.Web");
+
+    Log.Information("Building and running the application");
+    builder.Build().Run();
+
+    return 0;
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+    return 1;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
