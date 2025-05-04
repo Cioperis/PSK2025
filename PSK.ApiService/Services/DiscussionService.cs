@@ -1,4 +1,5 @@
-﻿using PSK.ApiService.Repositories.Interfaces;
+﻿using Microsoft.Extensions.Hosting.Schema;
+using PSK.ApiService.Repositories.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 using PSK.ServiceDefaults.Models;
@@ -14,7 +15,7 @@ public class DiscussionService : IDiscussionService
         _discussionRepository = discussionRepository;
     }
     
-    public async Task<DiscussionDTO> CreateDiscussionAsync(DiscussionDTO discussion)
+    public async Task<DiscussionDTO> CreateDiscussionAsync(CreateDiscussionSchema discussion)
     {
         Discussion newDiscussion = new Discussion
         {
@@ -28,6 +29,26 @@ public class DiscussionService : IDiscussionService
             Id = newDiscussion.Id,
             Name = newDiscussion.Name
         };
+    }
+
+    public async Task<DiscussionDTO> UpdateDiscussionAsync(DiscussionDTO discussion)
+    {
+        Discussion? discussionToUpdate = await _discussionRepository.GetByIdAsync(discussion.Id);
+        if (discussionToUpdate == null)
+            throw new Exception($"Discussion {discussion.Id} not found");
+
+        discussionToUpdate.Name = discussion.Name;
+        
+        _discussionRepository.Update(discussionToUpdate);
+        await _discussionRepository.SaveChangesAsync();
+        
+        var updatedDiscussionDto = new DiscussionDTO 
+        {
+            Id = discussion.Id,
+            Name = discussion.Name
+        };
+        
+        return updatedDiscussionDto;
     }
 
     public async Task<IEnumerable<DiscussionDTO>> GetAllDiscussionsAsync()
@@ -55,14 +76,16 @@ public class DiscussionService : IDiscussionService
         };
     }
 
-    public async Task DeleteDiscussionAsync(Guid discussionId)
+    public async Task<bool> DeleteDiscussionAsync(Guid discussionId)
     {
         Discussion? discussion = await _discussionRepository.GetByIdAsync(discussionId);
         
         if  (discussion == null)
-            throw new Exception($"Discussion {discussionId} not found");
+            return false;
         
         _discussionRepository.Remove(discussion);
         await _discussionRepository.SaveChangesAsync();
+        
+        return true;
     }
 }

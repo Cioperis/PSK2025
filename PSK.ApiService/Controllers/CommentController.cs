@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 
@@ -16,7 +17,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateComment(CommentDTO comment)
+    public async Task<IActionResult> CreateComment([FromBody] CreateCommentSchema comment)
     {
         try
         {
@@ -26,6 +27,22 @@ public class CommentController : ControllerBase
         catch (Exception e)
         {
             return BadRequest(e.Message);
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPut]
+    public async Task<IActionResult> UpdateComment([FromBody] CommentDTO comment)
+    {
+        try
+        {
+            CommentDTO updatedComment = await _commentService.UpdateCommentAsync(comment);
+            return Ok(updatedComment);
+        }
+        catch (Exception e)
+        {
+            return NotFound(e.Message);
         }
     }
     
@@ -43,18 +60,14 @@ public class CommentController : ControllerBase
         return Ok(commentDtos);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteComment([FromQuery] Guid id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteComment([FromRoute] Guid id)
     {
-        try
-        {
-            await _commentService.DeleteCommentAsync(id);
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
-        
+        if (!await _commentService.DeleteCommentAsync(id))
+            return NotFound($"Comment with id {id} not found");
+
         return Ok();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 using PSK.ServiceDefaults.Models;
@@ -17,10 +18,26 @@ public class DiscussionController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateDiscussion([FromBody] DiscussionDTO discussion)
+    public async Task<IActionResult> CreateDiscussion([FromBody] CreateDiscussionSchema discussion)
     {
         DiscussionDTO newDiscussionDto = await _discussionService.CreateDiscussionAsync(discussion);
         return Ok(newDiscussionDto);
+    }
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPut]
+    public async Task<IActionResult> UpdateDiscussion([FromBody] DiscussionDTO discussion)
+    {
+        try
+        {
+            DiscussionDTO updatedDiscussion = await _discussionService.UpdateDiscussionAsync(discussion);
+            return Ok(updatedDiscussion);
+        }
+        catch (Exception e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpGet("{id}")]
@@ -37,18 +54,14 @@ public class DiscussionController : ControllerBase
         return Ok(discussionDto);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteDiscussion([FromQuery] Guid id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteDiscussion([FromRoute] Guid id)
     {
-        try
-        {
-            await _discussionService.DeleteDiscussionAsync(id);
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
-        }
-        
+        if (!await _discussionService.DeleteDiscussionAsync(id))
+            return NotFound($"Discussion with id {id} not found");
+            
         return Ok();
     }
 }
