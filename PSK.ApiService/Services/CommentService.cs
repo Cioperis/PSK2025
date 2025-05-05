@@ -88,6 +88,18 @@ public class CommentService : ICommentService
             DiscussionId = comment.DiscussionId
         });
     }
+    
+    public async Task<IEnumerable<CommentDTO>> GetAllCommentsOfDiscussionAsync(Guid discussionId)
+    {
+        IEnumerable<Comment> comments = await _commentRepository.GetAllCommentsByDiscussionIdAsync(discussionId);
+        
+        return comments.Select(comment => new CommentDTO
+        {
+            Id = comment.Id,
+            Content = comment.Content,
+            DiscussionId = comment.DiscussionId
+        });
+    }
 
     public async Task<bool> DeleteCommentAsync(Guid commentId)
     {

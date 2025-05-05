@@ -111,6 +111,25 @@ public class CommentController : ControllerBase
         }
     }
     
+    [HttpGet("ofDiscussion/{discussionId}")]
+    [ProducesResponseType(typeof(IEnumerable<CommentDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllCommentsOfDiscussion(Guid discussionId)
+    {
+        try
+        {
+            var commentDtos = await _commentService.GetAllCommentsOfDiscussionAsync(discussionId);
+            Log.Information("Retrieved all comments of discussion {discussionId}. " +
+                            "Count: {CommentCount}", discussionId, commentDtos.Count());
+            return Ok(commentDtos);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error retrieving comments");
+            return StatusCode(500, "An error occurred while fetching comments");
+        }
+    }
+    
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

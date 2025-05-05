@@ -37,11 +37,24 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddSignalR();
+    
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy( policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+    });
 
     var app = builder.Build();
 
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    app.UseCors();
 
     app.MapGet("/", context =>
     {
