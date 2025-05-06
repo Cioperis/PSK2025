@@ -24,8 +24,30 @@ namespace PSK.MigrationService.Migrations
 
             modelBuilder.Entity("PSK.ServiceDefaults.Models.AutoMessage", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
 
                     b.ToTable("AutoMessages");
                 });
@@ -133,7 +155,22 @@ namespace PSK.MigrationService.Migrations
 
                     b.ToTable("Users");
                 });
-                
+
+            modelBuilder.Entity("PSK.ServiceDefaults.Models.Comment", b =>
+                {
+                    b.HasOne("PSK.ServiceDefaults.Models.Discussion", "Discussion")
+                        .WithMany("Comments")
+                        .HasForeignKey("DiscussionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Discussion");
+                });
+
+            modelBuilder.Entity("PSK.ServiceDefaults.Models.Discussion", b =>
+                {
+                    b.Navigation("Comments");
+                });
 #pragma warning restore 612, 618
         }
     }
