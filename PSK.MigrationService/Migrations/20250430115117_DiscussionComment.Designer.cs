@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PSK.ApiService.Data;
@@ -11,9 +12,11 @@ using PSK.ApiService.Data;
 namespace PSK.MigrationService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430115117_DiscussionComment")]
+    partial class DiscussionComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,14 +24,6 @@ namespace PSK.MigrationService.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("PSK.ServiceDefaults.Models.AutoMessage", b =>
-                {
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.ToTable("AutoMessages");
-                });
 
             modelBuilder.Entity("PSK.ServiceDefaults.Models.Comment", b =>
                 {
@@ -133,7 +128,22 @@ namespace PSK.MigrationService.Migrations
 
                     b.ToTable("Users");
                 });
-                
+
+            modelBuilder.Entity("PSK.ServiceDefaults.Models.Comment", b =>
+                {
+                    b.HasOne("PSK.ServiceDefaults.Models.Discussion", "Discussion")
+                        .WithMany("Comments")
+                        .HasForeignKey("DiscussionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Discussion");
+                });
+
+            modelBuilder.Entity("PSK.ServiceDefaults.Models.Discussion", b =>
+                {
+                    b.Navigation("Comments");
+                });
 #pragma warning restore 612, 618
         }
     }
