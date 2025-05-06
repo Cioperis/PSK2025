@@ -180,10 +180,6 @@
     background-color: rgb(255, 255, 255);
 }
 
-.invisible {
-    display: none;
-}
-
 .loadingHeader{
     display: flex;
     align-items: center;
@@ -229,7 +225,55 @@
     }
 }
 
-.loadingInvisible{
+.invisible {
     display: none;
 }
+
+.chatting{
+    background-color: rgb(88, 87, 87);
+    width: 100%;
+}   
+
+.chatBox{
+    margin-top: 2.5%;
+    margin-left: 5%;
+    background-color: rgb(131, 127, 127);
+    border-radius: 30px;
+    width: 90%;
+    height: 90%;
+    display: flex;
+
+}
+
+.textField{
+    margin-top: 20px;
+    border-radius: 30px;
+    border: 0;
+    width: 1500px;
+    height: 30px;
+    padding-left: 10px;
+    border: 2px solid red;
+}
+
+.sendButton{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    border: 2px solid red;
+}
+
+div.input{
+    background-color: rgb(65, 58, 58);
+    display: flex;
+    border: 2px solid red;
+    flex-direction: row;
+    align-self: flex-end;
+    border-radius: 0 0 30px 30px;
+    row-gap: 100px;
+    justify-content: space-around;
+    width: 100%;
+}
+
 

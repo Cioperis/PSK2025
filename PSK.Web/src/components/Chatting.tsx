@@ -14,7 +14,11 @@ const Chatting = () => {
     const [isPatientExpanded, setPatientExpanded] = useState<null | 'yes' | 'no'>(null);
     const [isHelperExpanded, setHelperExpanded] = useState<null | 'yes' | 'no'>(null);
 
-    const [isConnecting, setConnecting] = useState(false);
+    const [isConnectingPatient, setConnectingPatient] = useState(false);
+    const [isConnectingHelper, setConnectingHelper] = useState(false);
+
+    const [isConnected, setConnected] = useState(true);
+
 
     const handleButtonClick = (isPatient: boolean) => {
         if (isPatient) {
@@ -25,7 +29,7 @@ const Chatting = () => {
                 setTimeout(() => {
                     setShowPatientPlayingImage(true);
                     setPatientExpanded('yes');
-                    setConnecting(true);
+                    setConnectingPatient(true);
                 }, 400);
             } else {
                 setPatientPlaying(false);
@@ -36,7 +40,7 @@ const Chatting = () => {
                     setPatientExpanded(null);
                 }, 50);
                 setTimeout(() => {
-                    setConnecting(false);
+                    setConnectingPatient(false);
                 }, 400);
             }
         } else {
@@ -47,7 +51,7 @@ const Chatting = () => {
                 setTimeout(() => {
                     setShowHelperPlayingImage(true);
                     setHelperExpanded('yes');
-                    setConnecting(true);
+                    setConnectingHelper(true);
                 }, 400);
             } else {
                 setHelperPlaying(false);
@@ -58,7 +62,7 @@ const Chatting = () => {
                     setHelperExpanded(null);
                 }, 50);
                 setTimeout(() => {
-                    setConnecting(false);
+                    setConnectingHelper(false);
                 }, 400);
             }
         }        
@@ -68,33 +72,50 @@ const Chatting = () => {
 
     return(
         <div className="rootDiv">
-            <div className={`choiceDiv patientDiv ${expandedSide === 'patient' ? 'expand' : expandedSide === 'helper' ? 'shrink' : ''} 
-                ${isHelperExpanded === 'yes' ? 'hidden' : isHelperExpanded === 'no' ? 'shrink' : ''}`}>
+            <div className={`choiceDiv patientDiv ${isConnected ? 'invisible' : ''} ${expandedSide === 'patient' ? 'expand' : expandedSide === 'helper' ? 'shrink' : ''} 
+                ${isHelperExpanded === 'yes' ? 'invisible' : isHelperExpanded === 'no' ? 'shrink' : ''}`}>
                 <button className={`connectButton ${isPatientPlaying ? 'playing' : ''}`} onClick={() => handleButtonClick(true)}>
                     <img className={`notPlaying ${isPatientPlaying ? 'animate' : ''} ${showPatientPlayingImage ? 'invisible' : ''}`}  src="./../../public/playButton.png" alt="playPng"></img>
                     <img className={`playingImage ${showPatientPlayingImage ? 'visible' : ''}`} src="./../../public/playing.png" alt="playing"></img>
                 </button>
                 <div className="loadingHeader">
-                    <h5 className={isConnecting ? 'loadingInvisible' : ''}>Connect as patient</h5>
-                    <div className={`loading ${isConnecting ? '' : 'loadingInvisible'}`}>
+                    <h5 className={isConnectingPatient ? 'invisible' : ''}>Connect as patient</h5>
+                    <div className={`loading ${isConnectingPatient ? '' : 'invisible'}`}>
                         <div></div>
                         <div></div>
                         <div></div>
                     </div>
                 </div>
             </div>
-            <div className={`choiceDiv helperDiv ${expandedSide === 'helper' ? 'expand' : expandedSide === 'patient' ? 'shrink' : ''} 
-                ${isPatientExpanded === 'yes' ? 'hidden' : isPatientExpanded === 'no' ? 'shrink' : ''}`}>
+            <div className={`choiceDiv helperDiv ${isConnected ? 'invisible' : ''} ${expandedSide === 'helper' ? 'expand' : expandedSide === 'patient' ? 'shrink' : ''} 
+                ${isPatientExpanded === 'yes' ? 'invisible' : isPatientExpanded === 'no' ? 'shrink' : ''}`}>
                 <button className={`connectButton ${isHelperPlaying ? 'playing' : ''}`} onClick={() => handleButtonClick(false)}>
                     <img className={`notPlaying ${isHelperPlaying ? 'animate' : ''} ${showHelperPlayingImage ? 'invisible' : ''}`} src="./../../public/playButton.png" alt="playPng"></img>
                     <img className={`playingImage ${showHelperPlayingImage ? 'visible' : ''}`} src="./../../public/playing.png" alt="playing"></img>
                 </button>
                 <div className="loadingHeader">
-                    <h5 className={isConnecting ? 'loadingInvisible' : ''}>Connect as helper</h5>
-                    <div className={`loading ${isConnecting ? '' : 'loadingInvisible'}`}>
+                    <h5 className={isConnectingHelper ? 'invisible' : ''}>Connect as helper</h5>
+                    <div className={`loading ${isConnectingHelper ? '' : 'invisible'}`}>
                         <div></div>
                         <div></div>
                         <div></div>
+                    </div>
+                </div>
+            </div>
+
+            {/*Chatting window!!!!*/}
+
+            <div className="chatting">
+                <div className="chatBox">
+                    <div className="input">
+                        <div className="textDiv">
+                            <input className="textField" type="textbox" placeholder="Type message..."/>
+                        </div>
+                        <div className="sendButtonDiv">
+                            <button className="sendButton">
+
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
