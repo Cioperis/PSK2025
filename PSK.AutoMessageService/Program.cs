@@ -1,19 +1,44 @@
 using PSK.AutoMessageService;
 using PSK.AutoMessageService.Messaging;
+using Serilog;
+using Serilog.Events;
 
-var builder = WebApplication.CreateBuilder(args);
+// ./bin/debug/net9.0/PSK.AutoMessageService
+string basePath = AppContext.BaseDirectory;
 
-builder.AddServiceDefaults();
-builder.AddRabbitMQClient("rabbitmq");
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File($"{basePath}/Logging/Logs.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<NotificationService>();
-builder.Services.AddHostedService<UserCreatedConsumer>();
+    builder.Host.UseSerilog();
+    builder.AddServiceDefaults();
+    builder.AddRabbitMQClient("rabbitmq");
 
-var app = builder.Build();
+    builder.Services.Configure<EmailSettings>(
+        builder.Configuration.GetSection("EmailSettings"));
 
-app.UseHttpsRedirection();
+    builder.Services.AddSingleton<NotificationService>();
+    builder.Services.AddHostedService<UserCreatedConsumer>();
 
-app.Run();
+    var app = builder.Build();
+
+    app.UseHttpsRedirection();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application startup failed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
