@@ -1,8 +1,89 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./Chatting.css";
+import * as signalR from "@microsoft/signalr";
 
+
+type Message = {
+    id: string;
+    text: string;
+    date: string;
+    sender: 'user' | 'other' | 'system';
+};
 
 const Chatting = () => {
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+    const [chatId, setChatId] = useState<string | null>(null);
+
+    const addMessage = (msgWithoutId: Omit<Message, 'id'>) => {
+        const newMsg: Message = {
+          ...msgWithoutId,
+          id: crypto.randomUUID()
+        };
+        setMessages(prev => [...prev, newMsg]);
+    };
+    const getMessageClass = (sender: number | string) => {
+        if (sender === 'user') return 'fromUser';
+        if (sender === 'other') return 'fromOther';
+        return 'fromSystem';
+    };
+
+    const setupConnectionHandlers = (connection: signalR.HubConnection) => {
+        connection.on("ReceiveMessage", (senderId: string, message: string, date: Date) => {
+            const parsedDate = new Date(date);
+            addMessage({
+                text: message,
+                date: parsedDate.toLocaleTimeString(),
+                sender: 'other'
+            });
+        });
+
+        connection.on("ReceiveSystemMessage", (message: string, date: Date) => {
+            if(chatId != null){
+                const parsedDate = new Date(date); 
+                addMessage({
+                    text: message,
+                    date: parsedDate.toLocaleTimeString(),
+                    sender: 'system'
+                });
+            }
+        });
+
+        connection.on("ReceiveChatId", (id: string) => {
+            setChatId(id);
+            setConnected(true);
+            setPartnerConnected(true);
+        });
+
+        connection.on("ForceDisconnect", () => {
+            connection.stop().catch(err => console.error("Disconnect error:", err));
+            setPartnerConnected(false);
+        });
+    };
+
+    const connectToHub = async (userType: 'Patient' | 'Helper') => {
+        if (connection) await connection.stop();
+        
+        try {
+            const newConnection = new signalR.HubConnectionBuilder()
+                .withUrl(`https://localhost:7262/chatHub?userType=${userType}`)
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Debug)
+                .build();
+
+            setupConnectionHandlers(newConnection);
+            setConnection(newConnection);
+            await newConnection.start();
+        } catch (err) {
+            console.error("[SignalR] Connection failed:", err);
+            
+            if (userType === 'Patient') {
+                resetPatientState();
+            } else {
+                resetHelperState();
+            }
+        }
+    };
     
     const [isPatientPlaying, setPatientPlaying] = useState(false);
     const [isHelperPlaying, setHelperPlaying] = useState(false);
@@ -17,58 +98,126 @@ const Chatting = () => {
     const [isConnectingPatient, setConnectingPatient] = useState(false);
     const [isConnectingHelper, setConnectingHelper] = useState(false);
 
-    const [isConnected, setConnected] = useState(true);
+    const [isConnected, setConnected] = useState(false);
+    const [isPartnerConnected, setPartnerConnected] = useState(false);
 
-
-    const handleButtonClick = (isPatient: boolean) => {
+    const handleButtonClick = async (isPatient: boolean) => {
         if (isPatient) {
             if (!isPatientPlaying) {
                 setPatientPlaying(true);
                 setShowPatientPlayingImage(false);
                 setExpandedSide('patient');
-                setTimeout(() => {
-                    setShowPatientPlayingImage(true);
-                    setPatientExpanded('yes');
-                    setConnectingPatient(true);
-                }, 400);
+                await new Promise(resolve => setTimeout(resolve, 400));
+                setShowPatientPlayingImage(true);
+                setPatientExpanded('yes');
+                setConnectingPatient(true);
+                await connectToHub('Patient');
             } else {
                 setPatientPlaying(false);
                 setShowPatientPlayingImage(false);
                 setExpandedSide(null);
                 setPatientExpanded('no');
+
+                if (connection) {
+                    try {
+                        await connection.stop();
+                        setConnection(null);
+                    } catch (err) {
+                        console.error("Disconnection error:", err);
+                    }
+                }
+                
                 setTimeout(() => {
                     setPatientExpanded(null);
                 }, 50);
                 setTimeout(() => {
                     setConnectingPatient(false);
-                }, 400);
+                }, 450);
             }
         } else {
             if (!isHelperPlaying) {
                 setHelperPlaying(true);
                 setShowHelperPlayingImage(false);
                 setExpandedSide('helper');
-                setTimeout(() => {
-                    setShowHelperPlayingImage(true);
-                    setHelperExpanded('yes');
-                    setConnectingHelper(true);
-                }, 400);
+                await new Promise(resolve => setTimeout(resolve, 400));
+                setShowHelperPlayingImage(true);
+                setHelperExpanded('yes');
+                setConnectingHelper(true);
+                await connectToHub('Helper');
             } else {
                 setHelperPlaying(false);
                 setShowHelperPlayingImage(false);
                 setExpandedSide(null);
                 setHelperExpanded('no');
+
+                if (connection) {
+                    try {
+                        await connection.stop();
+                        setConnection(null);
+                    } catch (err) {
+                        console.error("Disconnection error:", err);
+                    }
+                }
+
                 setTimeout(() => {
                     setHelperExpanded(null);
                 }, 50);
                 setTimeout(() => {
                     setConnectingHelper(false);
-                }, 400);
+                }, 450);
             }
         }        
     };
 
+    const [message, setMessage] = useState('');
+    const sendMessage = async () => {
+        if (message.trim() == '' || !isPartnerConnected) return;
+
+        try{
+            addMessage({ 
+                text: message, 
+                date: new Date().toLocaleTimeString(), 
+                sender: 'user'
+            });
+            await connection!.invoke("SendMessage", chatId, message);
+            setMessage('');
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    };
+
+    const leaveChat = async () => {
+        if (connection) {
+            await connection.stop();
+            setConnection(null);
+        }
+
+        if(isConnectingPatient){
+            resetPatientState();
+        } else{
+            resetHelperState();
+        }
+
+        setMessages([]);
+        setPartnerConnected(false);
+        setConnected(false);
+    };
     
+    const resetPatientState = () => {
+        setPatientPlaying(false);
+        setShowPatientPlayingImage(false);
+        setExpandedSide(null);
+        setPatientExpanded(null);
+        setConnectingPatient(false);
+    };
+
+    const resetHelperState = () => {
+        setHelperPlaying(false);
+        setShowHelperPlayingImage(false);
+        setExpandedSide(null);
+        setHelperExpanded(null);
+        setConnectingHelper(false);
+    };
 
     return(
         <div className="rootDiv">
@@ -105,15 +254,38 @@ const Chatting = () => {
 
             {/*Chatting window!!!!*/}
 
-            <div className="chatting">
+            <div className={`chatting ${isConnected ? '' : 'invisible'}`}>
                 <div className="chatBox">
+                    <div className="headerOfChat">
+                        <div className={`connectionStatus ${isPartnerConnected ? 'connectionStatusOn' : 'connectionStatusOff'}`}></div>
+                        <h4>{isConnectingPatient ? 'Connected as patient' : 'Connected as helper'}</h4>
+                        <button className="disconnectButton" onClick={leaveChat}>Leave chat</button>
+                    </div>
+                    <div className="chatPart">
+                        <div className="messagesContainer">
+                            {messages.map(msg => (
+                            <div key={msg.id} className={`message ${getMessageClass(msg.sender)}`}>
+                                <span className="messageText">{msg.text}</span>
+                                <span className="messageDate">{msg.date}</span>
+                            </div>
+                            ))}
+                        </div>
+                    </div>
                     <div className="input">
                         <div className="textDiv">
-                            <input className="textField" type="textbox" placeholder="Type message..."/>
+                            <textarea className="textField" placeholder="Type message..."
+                             value={message}
+                             onChange={(e) => setMessage(e.target.value)}
+                             onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    sendMessage();
+                                }
+                            }}/>
                         </div>
                         <div className="sendButtonDiv">
-                            <button className="sendButton">
-
+                            <button className="sendButton" onClick={sendMessage}>
+                                <img className="sendButtonImg" src="./../../public/send.png" alt="sendImage"></img>
                             </button>
                         </div>
                     </div>

@@ -49,11 +49,11 @@
 }
 
 .patientDiv {
-    background-color: rgb(192, 192, 11);
+    background-color: rgb(159, 132, 204);
 }
 
 .helperDiv {
-    background-color: rgb(65, 161, 65);
+    background-color: rgb(103, 186, 189);
 }
 
 .connectButton {
@@ -242,38 +242,199 @@
     width: 90%;
     height: 90%;
     display: flex;
+    flex-direction: column;
+}
 
+.headerOfChat{
+    flex-grow: 1;
+    border-radius: 30px 30px 0 0;
+    background-color: rgb(65, 58, 58);
+    height: 10%;
+    padding-left: 2%;
+    display: flex;
+    flex-direction: row;
+    padding-right: 2%;
+    text-align: left;
+    column-gap: 1%;
+    align-items: center;
+}
+
+.headerOfChat > h4{
+    color: white;
+    flex-grow: 2;
+    padding: 0;
+    margin: 0;
+}
+
+.connectionStatus{
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+}
+
+.connectionStatusOn{
+    background-color: green;
+}
+.connectionStatusOff{
+    background-color: red;
+}
+
+.disconnectButton{
+    border: 0;
+    background-color: red;
+    color: white;
+    border-radius: 10px;
+    font-weight:620;
+    width: 90px;
+    height: 40px;
+}
+
+.chatPart{
+    background-color: transparent;
+    flex-grow: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.chatPart::-webkit-scrollbar, .textField::-webkit-scrollbar {
+    width: 7px;
+  }
+  
+.chatPart::-webkit-scrollbar-track, .textField::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.chatPart::-webkit-scrollbar-thumb{
+    background-color: rgb(255, 255, 255); 
+    border-radius: 10px; 
+}
+
+.textField::-webkit-scrollbar-thumb{
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.chatPart::-webkit-scrollbar-button, .textField::-webkit-scrollbar-button {
+    display: none; 
+}
+  
+
+.messagesContainer {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    gap: 10px;
+}
+
+.message {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+}
+
+.fromUser {
+    align-self: flex-start;
+    background-color: #a677dd;
+}
+
+.fromOther {
+    align-self: flex-end;
+    background-color: #68447e;
+}
+
+.fromSystem {
+    align-self: center;
+    background-color: transparent;
+    font-style: italic;
+    color: rgb(214, 212, 212);
+}
+
+.messageText {
+    font-size: 1rem;
+}
+
+.messageDate {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-top: 4px;
+    align-self: flex-end;
 }
 
 .textField{
-    margin-top: 20px;
     border-radius: 30px;
     border: 0;
-    width: 1500px;
-    height: 30px;
-    padding-left: 10px;
-    border: 2px solid red;
+    width: 70vw;
+    max-height: 15vh;
+    padding-left: 15px;
+    padding-right: 15px;
+    field-sizing: content;
 }
 
-.sendButton{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-    border: 2px solid red;
+.textField:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.textField::-webkit-resizer {
+    display: none !important; 
+    color: transparent !important;
+    border: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.textField::-moz-resizer {
+    display: none;
+}
+
+div.input > *{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.textDiv{
+    display: flex;
+    align-items: center;
+    flex-grow: 2;
+}
+
+.sendButtonDiv{
+    display: flex;
+    align-items: center;
 }
 
 div.input{
     background-color: rgb(65, 58, 58);
     display: flex;
-    border: 2px solid red;
     flex-direction: row;
     align-self: flex-end;
     border-radius: 0 0 30px 30px;
-    row-gap: 100px;
-    justify-content: space-around;
     width: 100%;
+    padding-left: 2%;
+    padding-right: 10%;
+}
+
+.sendButton{
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+    border: 0;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.sendButtonImg{
+    width: 35px;
+    height: 35px;
 }
 
 
