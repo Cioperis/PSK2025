@@ -25,6 +25,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Restore dependencies
+        run: dotnet restore
+
       - name: Check NuGet package vulnerabilities
         run: dotnet list package --vulnerable
 
@@ -51,6 +54,10 @@ jobs:
 
   frontend-audit:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: PSK.Web
 
     steps:
       - name: Checkout code
