@@ -14,14 +14,14 @@ public class DiscussionService : IDiscussionService
     {
         _discussionRepository = discussionRepository;
     }
-    
+
     public async Task<DiscussionDTO> CreateDiscussionAsync(CreateDiscussionSchema discussion)
     {
         Discussion newDiscussion = new Discussion
         {
             Name = discussion.Name
         };
-        
+
         await _discussionRepository.AddAsync(newDiscussion);
         await _discussionRepository.SaveChangesAsync();
         return new DiscussionDTO
@@ -38,16 +38,16 @@ public class DiscussionService : IDiscussionService
             throw new Exception($"Discussion {discussion.Id} not found");
 
         discussionToUpdate.Name = discussion.Name;
-        
+
         _discussionRepository.Update(discussionToUpdate);
         await _discussionRepository.SaveChangesAsync();
-        
-        var updatedDiscussionDto = new DiscussionDTO 
+
+        var updatedDiscussionDto = new DiscussionDTO
         {
             Id = discussion.Id,
             Name = discussion.Name
         };
-        
+
         return updatedDiscussionDto;
     }
 
@@ -79,13 +79,13 @@ public class DiscussionService : IDiscussionService
     public async Task<bool> DeleteDiscussionAsync(Guid discussionId)
     {
         Discussion? discussion = await _discussionRepository.GetByIdAsync(discussionId);
-        
-        if  (discussion == null)
+
+        if (discussion == null)
             return false;
-        
+
         _discussionRepository.Remove(discussion);
         await _discussionRepository.SaveChangesAsync();
-        
+
         return true;
     }
 }

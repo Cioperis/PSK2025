@@ -16,20 +16,20 @@ public class CommentService : ICommentService
         _commentRepository = commentRepository;
         _discussionRepository = discussionRepository;
     }
-    
+
     public async Task<CommentDTO> CreateCommentAsync(CreateCommentSchema comment)
     {
         Discussion? discussion = await _discussionRepository.GetByIdAsync(comment.DiscussionId);
         if (discussion == null)
             throw new Exception($"Comment's parent Discussion {comment.DiscussionId} not found");
-        
+
         Comment newComment = new Comment
         {
             Content = comment.Content,
             DiscussionId = comment.DiscussionId,
             Discussion = discussion
         };
-        
+
         await _commentRepository.AddAsync(newComment);
         await _commentRepository.SaveChangesAsync();
         return new CommentDTO
@@ -48,25 +48,25 @@ public class CommentService : ICommentService
 
         commentToUpdate.Content = comment.Content;
         commentToUpdate.DiscussionId = comment.DiscussionId;
-        
+
         _commentRepository.Update(commentToUpdate);
         await _commentRepository.SaveChangesAsync();
-        
-        var updatedCommentDto = new CommentDTO 
+
+        var updatedCommentDto = new CommentDTO
         {
             Id = commentToUpdate.Id,
             Content = commentToUpdate.Content,
             DiscussionId = commentToUpdate.DiscussionId,
         };
-        
+
         return updatedCommentDto;
     }
 
     public async Task<CommentDTO?> GetCommentAsync(Guid commentId)
     {
         Comment? comment = await _commentRepository.GetByIdAsync(commentId);
-        
-        if  (comment == null)
+
+        if (comment == null)
             return null;
 
         return new CommentDTO
@@ -80,7 +80,7 @@ public class CommentService : ICommentService
     public async Task<IEnumerable<CommentDTO>> GetAllCommentsAsync()
     {
         IEnumerable<Comment> comments = await _commentRepository.GetAllAsync();
-        
+
         return comments.Select(comment => new CommentDTO
         {
             Id = comment.Id,
@@ -95,10 +95,10 @@ public class CommentService : ICommentService
 
         if (comment == null)
             return false;
-        
+
         _commentRepository.Remove(comment);
         await _commentRepository.SaveChangesAsync();
-        
+
         return true;
     }
 }
