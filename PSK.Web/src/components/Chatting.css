@@ -1,0 +1,460 @@
+.rootDiv {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    position: fixed;
+    top: 8%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+
+}
+
+.choiceDiv {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease-in-out;
+    position: relative;
+    width: 100%;
+}
+
+.choiceDiv.expand {
+    flex-grow: 10;
+    z-index: 2;
+}
+
+.choiceDiv.shrink {
+    flex-grow: 0;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+}
+
+.choiceDiv.hidden {
+    display: none;
+  }
+
+.connectButton,
+.choiceDiv h5 {
+    transition: transform 0.4s ease-in-out;
+}
+
+.choiceDiv.expand .connectButton,
+.choiceDiv.expand h5 {
+    transform: translateY(0) scale(1.2);
+}
+
+.patientDiv {
+    background-color: rgb(159, 132, 204);
+}
+
+.helperDiv {
+    background-color: rgb(103, 186, 189);
+}
+
+.connectButton {
+    margin-top: 5%;
+    height: 200px;
+    width: 200px;
+    border-radius: 100%;
+    margin-bottom: 5%;
+    border: 0px solid black;
+    background-color: rgba(104, 96, 96, 0.692);
+
+    overflow: hidden;
+    padding: 1rem 2rem;
+    position: relative;
+    text-decoration: none;
+    transition: 0.2s transform ease-in-out;
+    will-change: transform;
+    z-index: 0;
+}
+
+.connectButton::after {
+    background-color: rgb(255, 255, 255);
+    border-radius: 100%;
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-100%, 0);
+    transform-origin: left;
+    transition: 0.2s transform ease-out;
+    will-change: transform;
+    z-index: -1;
+}
+
+.connectButton:hover::after{
+    transform: translate(0, 0);
+}
+
+.connectButton:hover {
+    transform: scale(1.05);
+    will-change: transform;
+}
+
+.notPlaying {
+    display: inline;
+    transition: all 0.5s ease-in-out;
+}
+
+.notPlaying.animate {
+    animation: jumpAndRotate 0.4s ease-in-out forwards;
+}
+
+@keyframes jumpAndRotate {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    6.25% {
+        transform: translateY(-6.25px) rotate(22.5deg);
+    }
+    12.5% {
+        transform: translateY(-12.5px) rotate(45deg);
+    }
+    18.75% {
+        transform: translateY(-18.75px) rotate(67.5deg);
+    }
+    25% {
+        transform: translateY(-25px) rotate(90deg);
+    }
+    31.25% {
+        transform: translateY(-31.25px) rotate(112.5deg);
+    }
+    37.5% {
+        transform: translateY(-37.5px) rotate(135deg);
+    }
+    43.75% {
+        transform: translateY(-43.75px) rotate(157.5deg);
+    }
+    50% {
+        transform: translateY(-50px) rotate(180deg);
+    }
+    56.25% {
+        transform: translateY(-43.75px) rotate(202.5deg);
+    }
+    62.5% {
+        transform: translateY(-37.5px) rotate(225deg);
+    }
+    68.75% {
+        transform: translateY(-31.25px) rotate(247.5deg);
+    }
+    75% {
+        transform: translateY(-25px) rotate(270deg);
+    }
+    81.25% {
+        transform: translateY(-18.75px) rotate(292.5deg);
+    }
+    87.5% {
+        transform: translateY(-12.5px) rotate(315deg);
+    }
+    93.75% {
+        transform: translateY(-6.25px) rotate(337.5deg);
+    }
+    100% {
+        transform: translateY(0) rotate(360deg);
+    }
+}
+
+
+.playingImage {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.playingImage.visible {
+    display: inline;
+}
+
+.connectButton.playing {
+    background-color: rgb(255, 255, 255);
+}
+
+.loadingHeader{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    row-gap: 50px;
+}
+
+
+.loading{
+    display: flex;
+    gap: 12px;
+}
+
+.loading div {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    animation: cycle 1s ease-in-out infinite;
+}
+
+.loading div:nth-child(1) {
+    animation-delay: 0;
+}
+
+.loading div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading div:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes cycle {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(1rem);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.invisible {
+    display: none;
+}
+
+.chatting{
+    background-color: rgb(88, 87, 87);
+    width: 100%;
+}   
+
+.chatBox{
+    margin-top: 2.5%;
+    margin-left: 10%;
+    background-color: rgb(131, 127, 127);
+    border-radius: 30px;
+    width: 80%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+}
+
+.headerOfChat{
+    flex-grow: 1;
+    border-radius: 30px 30px 0 0;
+    background-color: rgb(65, 58, 58);
+    height: 10%;
+    padding-left: 2%;
+    display: flex;
+    flex-direction: row;
+    padding-right: 2%;
+    text-align: left;
+    column-gap: 1%;
+    align-items: center;
+}
+
+.headerOfChat > h4{
+    color: white;
+    flex-grow: 2;
+    padding: 0;
+    margin: 0;
+}
+
+.connectionStatus{
+    border-radius: 100%;
+    width: 15px;
+    height: 15px;
+}
+
+.connectionStatusOn{
+    background-color: green;
+}
+.connectionStatusOff{
+    background-color: red;
+}
+
+.disconnectButton{
+    border: 0;
+    background-color: red;
+    color: white;
+    border-radius: 10px;
+    font-weight:620;
+    width: 90px;
+    height: 40px;
+}
+
+.disconnectButton:hover{
+    background-color: rgb(119, 4, 4);
+}
+
+.chatPart{
+    background-color: transparent;
+    flex-grow: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.chatPart::-webkit-scrollbar, .textField::-webkit-scrollbar {
+    width: 7px;
+  }
+  
+.chatPart::-webkit-scrollbar-track, .textField::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.chatPart::-webkit-scrollbar-thumb{
+    background-color: rgb(255, 255, 255); 
+    border-radius: 10px; 
+}
+
+.textField::-webkit-scrollbar-thumb{
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.chatPart::-webkit-scrollbar-button, .textField::-webkit-scrollbar-button {
+    display: none; 
+}
+  
+
+.messagesContainer {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    gap: 10px;
+}
+
+.message {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+}
+
+.fromUser {
+    align-self: flex-start;
+    background-color: #a677dd;
+}
+
+.fromOther {
+    align-self: flex-end;
+    background-color: #68447e;
+}
+
+.fromSystem {
+    align-self: center;
+    background-color: transparent;
+    font-style: italic;
+    color: rgb(214, 212, 212);
+}
+
+.messageText {
+    font-size: 1rem;
+}
+
+.messageDate {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-top: 4px;
+    align-self: flex-end;
+}
+
+.textField{
+    border-radius: 30px;
+    border: 0;
+    width: 100vw;
+    max-height: 15vh;
+    padding-left: 15px;
+    padding-right: 15px;
+    field-sizing: content;
+}
+
+.textField:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.textField::-webkit-resizer {
+    display: none !important; 
+    color: transparent !important;
+    border: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.textField::-moz-resizer {
+    display: none;
+}
+
+div.input > *{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.textDiv{
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 80vw;
+}
+
+.sendButtonDiv{
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+div.input{
+    background-color: rgb(65, 58, 58);
+    display: flex;
+    flex-direction: row;
+    align-self: flex-end;
+    border-radius: 0 0 30px 30px;
+    width: 100%;
+    padding-left: 2%;
+    padding-right: 2.5%;
+    column-gap: 2.5%;
+}
+
+.sendButton{
+    background-color: rgb(25, 138, 72);
+    aspect-ratio: 1/1;
+    min-width: 15px;
+    width: 45px;
+    border-radius: 100%;
+    border: 0;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    padding: 0;
+    justify-content: center;
+}
+
+.sendButton:hover{
+    background-color: rgb(17, 87, 46);
+
+}
+
+.sendButtonImg{
+    width: 75%; 
+    height: 75%; 
+    min-width: 5px;
+    min-height: 5px;
+    object-fit: contain;
+}
+
+

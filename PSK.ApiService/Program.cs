@@ -41,6 +41,16 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddSignalR();
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowLocalhost5173", policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+    });
 
     builder.AddRabbitMQClient("rabbitmq");
     builder.Services.AddSingleton<IRabbitMQueue, RabbitMQueue>();
@@ -49,6 +59,8 @@ try
 
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("AllowLocalhost5173");
+
 
     app.MapGet("/", context =>
     {
