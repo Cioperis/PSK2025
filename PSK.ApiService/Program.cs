@@ -7,6 +7,8 @@ using PSK.ApiService.Services;
 using PSK.ApiService.Chatting;
 using Serilog;
 using Serilog.Events;
+using PSK.ApiService.Messaging.Interfaces;
+using PSK.ApiService.Messaging;
 
 // ./bin/debug/net9.0/PSK.ApiService
 string basePath = AppContext.BaseDirectory;
@@ -28,6 +30,8 @@ try
     builder.AddNpgsqlDbContext<AppDbContext>(connectionName: "postgresdb");
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IAutoMessageRepository, AutoMessageRepository>();
+    builder.Services.AddScoped<IAutoMessageService, AutoMessageService>();
     builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
@@ -47,6 +51,10 @@ try
                   .AllowCredentials();
         });
     });
+
+    builder.AddRabbitMQClient("rabbitmq");
+    builder.Services.AddSingleton<IRabbitMQueue, RabbitMQueue>();
+
     var app = builder.Build();
 
     app.UseSwagger();

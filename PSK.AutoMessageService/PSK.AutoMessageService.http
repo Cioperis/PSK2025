@@ -1,0 +1,6 @@
+@PSK.AutoMessageService_HostAddress = http://localhost:5140
+
+GET {{PSK.AutoMessageService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
