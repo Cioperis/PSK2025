@@ -18,12 +18,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
 
       - name: Check NuGet package vulnerabilities
         run: dotnet list package --vulnerable
@@ -33,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run OWASP Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
@@ -44,7 +47,7 @@ jobs:
           out: 'dependency-check-report'
 
       - name: Upload Dependency-Check report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report-${{ github.sha }}
           path: dependency-check-report
@@ -52,9 +55,13 @@ jobs:
   frontend-audit:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: PSK.Web
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
