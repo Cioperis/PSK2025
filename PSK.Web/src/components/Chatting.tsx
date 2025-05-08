@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./Chatting.css";
 import * as signalR from "@microsoft/signalr";
 
@@ -11,9 +11,34 @@ type Message = {
 };
 
 const Chatting = () => {
+
+    useEffect(() => {
+        return () => {
+            gracefulShutdown();
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleUnload = () => {
+            gracefulShutdown();
+        };
+        
+        window.addEventListener('unload', handleUnload);
+        
+        return () => window.removeEventListener('unload', handleUnload);
+    }, []);
+
+    const gracefulShutdown = () => {
+        if(connectionRef.current){
+            connectionRef.current.stop();
+            connectionRef.current = null;
+            chatIdRef.current = null;
+        }
+    }
+
     const [messages, setMessages] = useState<Message[]>([]);
-    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-    const [chatId, setChatId] = useState<string | null>(null);
+    const connectionRef = useRef<signalR.HubConnection | null>(null);
+    const chatIdRef = useRef<string | null>(null);
 
     const addMessage = (msgWithoutId: Omit<Message, 'id'>) => {
         const newMsg: Message = {
@@ -39,7 +64,7 @@ const Chatting = () => {
         });
 
         connection.on("ReceiveSystemMessage", (message: string, date: Date) => {
-            if(chatId != null){
+            if(chatIdRef.current != null){
                 const parsedDate = new Date(date); 
                 addMessage({
                     text: message,
@@ -50,19 +75,20 @@ const Chatting = () => {
         });
 
         connection.on("ReceiveChatId", (id: string) => {
-            setChatId(id);
+            chatIdRef.current = id;
             setConnected(true);
             setPartnerConnected(true);
         });
 
         connection.on("ForceDisconnect", () => {
+            console.log("disconnected g!!");
             connection.stop().catch(err => console.error("Disconnect error:", err));
             setPartnerConnected(false);
         });
     };
 
     const connectToHub = async (userType: 'Patient' | 'Helper') => {
-        if (connection) await connection.stop();
+        if (connectionRef.current) await connectionRef.current.stop();
         
         try {
             const newConnection = new signalR.HubConnectionBuilder()
@@ -71,12 +97,11 @@ const Chatting = () => {
                 .configureLogging(signalR.LogLevel.Debug)
                 .build();
 
-            setupConnectionHandlers(newConnection);
-            setConnection(newConnection);
-            await newConnection.start();
+            connectionRef.current = newConnection;
+            setupConnectionHandlers(connectionRef.current);
+            await connectionRef.current.start();
         } catch (err) {
             console.error("[SignalR] Connection failed:", err);
-            
             if (userType === 'Patient') {
                 resetPatientState();
             } else {
@@ -118,10 +143,10 @@ const Chatting = () => {
                 setExpandedSide(null);
                 setPatientExpanded('no');
 
-                if (connection) {
+                if (connectionRef.current) {
                     try {
-                        await connection.stop();
-                        setConnection(null);
+                        await connectionRef.current.stop();
+                        connectionRef.current = null;
                     } catch (err) {
                         console.error("Disconnection error:", err);
                     }
@@ -150,10 +175,10 @@ const Chatting = () => {
                 setExpandedSide(null);
                 setHelperExpanded('no');
 
-                if (connection) {
+                if (connectionRef.current) {
                     try {
-                        await connection.stop();
-                        setConnection(null);
+                        await connectionRef.current.stop();
+                        connectionRef.current = null;
                     } catch (err) {
                         console.error("Disconnection error:", err);
                     }
@@ -179,7 +204,7 @@ const Chatting = () => {
                 date: new Date().toLocaleTimeString(), 
                 sender: 'user'
             });
-            await connection!.invoke("SendMessage", chatId, message);
+            await connectionRef.current!.invoke("SendMessage", chatIdRef.current, message);
             setMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
@@ -187,9 +212,10 @@ const Chatting = () => {
     };
 
     const leaveChat = async () => {
-        if (connection) {
-            await connection.stop();
-            setConnection(null);
+        if (connectionRef.current) {
+            await connectionRef.current.stop();
+            connectionRef.current = null;
+            chatIdRef.current = null;
         }
 
         if(isConnectingPatient){
@@ -251,8 +277,6 @@ const Chatting = () => {
                     </div>
                 </div>
             </div>
-
-            {/*Chatting window!!!!*/}
 
             <div className={`chatting ${isConnected ? '' : 'invisible'}`}>
                 <div className="chatBox">

@@ -236,10 +236,10 @@
 
 .chatBox{
     margin-top: 2.5%;
-    margin-left: 5%;
+    margin-left: 10%;
     background-color: rgb(131, 127, 127);
     border-radius: 30px;
-    width: 90%;
+    width: 80%;
     height: 90%;
     display: flex;
     flex-direction: column;
@@ -287,6 +287,10 @@
     font-weight:620;
     width: 90px;
     height: 40px;
+}
+
+.disconnectButton:hover{
+    background-color: rgb(119, 4, 4);
 }
 
 .chatPart{
@@ -371,7 +375,7 @@
 .textField{
     border-radius: 30px;
     border: 0;
-    width: 70vw;
+    width: 100vw;
     max-height: 15vh;
     padding-left: 15px;
     padding-right: 15px;
@@ -403,12 +407,15 @@ div.input > *{
 .textDiv{
     display: flex;
     align-items: center;
-    flex-grow: 2;
+    flex-grow: 1;
+    min-width: 0;
+    max-width: 80vw;
 }
 
 .sendButtonDiv{
     display: flex;
     align-items: center;
+    flex-grow: 1;
 }
 
 div.input{
@@ -419,22 +426,35 @@ div.input{
     border-radius: 0 0 30px 30px;
     width: 100%;
     padding-left: 2%;
-    padding-right: 10%;
+    padding-right: 2.5%;
+    column-gap: 2.5%;
 }
 
 .sendButton{
+    background-color: rgb(25, 138, 72);
+    aspect-ratio: 1/1;
+    min-width: 15px;
     width: 45px;
-    height: 45px;
     border-radius: 100%;
     border: 0;
     display: flex;
     flex-grow: 1;
     align-items: center;
+    padding: 0;
+    justify-content: center;
+}
+
+.sendButton:hover{
+    background-color: rgb(17, 87, 46);
+
 }
 
 .sendButtonImg{
-    width: 35px;
-    height: 35px;
+    width: 75%; 
+    height: 75%; 
+    min-width: 5px;
+    min-height: 5px;
+    object-fit: contain;
 }
 
 

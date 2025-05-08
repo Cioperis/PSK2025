@@ -70,8 +70,8 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
                 );
 
                 await Task.WhenAll(
-                    Clients.Client(helper).ReceiveSystemMessage("Connected to patient", DateTime.Now),
-                    Clients.Client(patient).ReceiveSystemMessage("Connected to helper", DateTime.Now)
+                    Clients.Client(helper).ReceiveSystemMessage("Connected to a patient", DateTime.Now),
+                    Clients.Client(patient).ReceiveSystemMessage("Connected to a helper", DateTime.Now)
                 );
 
                 helperQueue.TryDequeue(out _);
@@ -86,7 +86,6 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
 
     private bool IsConnectionActive(string connectionId)
     {
-        Console.WriteLine("check connection: " + activeConnections.ContainsKey(connectionId));
         return activeConnections.ContainsKey(connectionId);
     }
 
