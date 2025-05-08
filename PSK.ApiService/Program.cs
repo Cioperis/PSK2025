@@ -36,7 +36,7 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
-    
+
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
