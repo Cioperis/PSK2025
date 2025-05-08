@@ -6,6 +6,8 @@
 - Serilog (Structured Logging)
 - PostgreSQL (Database)
 - Entity Framework Core (ORM)
+- CI + Vulnerability check
+- RabbitMQ
 
 ## 🏗️ Project Structure and Layers
 This project follows a layered architecture model following an orchestrational software pattern:
@@ -15,6 +17,7 @@ This project follows a layered architecture model following an orchestrational s
 - **MigrationService layer**: Handles database operations using Entity Framework Core.
 - **AppHost layer**: Orchestrational layer. Currently starts up the API, database and React frontend.
 - **Web layer**: React-based frontend application.
+- **AutoMessageService**: Email notifications.
 
 ## 🛠️ How to Launch the Project
 
