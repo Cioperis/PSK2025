@@ -1,11 +1,6 @@
 name: Vulnerability Check
 
 on:
-  push:
-    branches:
-      - main
-      - 'f/**'
-      - 'h/**'
   pull_request:
     branches: [ main ]
   schedule:
