@@ -7,7 +7,7 @@
 - PostgreSQL (Database)
 - Entity Framework Core (ORM)
 - CI + Vulnerability check
-- RabbitMQ
+- RabbitMQ (Message broker for asynchronous communication and task queuing)
 
 ## 🏗️ Project Structure and Layers
 This project follows a layered architecture model following an orchestrational software pattern:
