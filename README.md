@@ -1,6 +1,6 @@
 ﻿# PSK2025 Emotional Support Project
 
-## Status
+## 🛠️ Status
 
 [![CI](https://github.com/Cioperis/PSK2025/actions/workflows/CI.yml/badge.svg)](https://github.com/Cioperis/PSK2025/actions/workflows/CI.yml)
 [![Vulnerability Check](https://github.com/Cioperis/PSK2025/actions/workflows/Vuln-Check.yml/badge.svg)](https://github.com/Cioperis/PSK2025/actions/workflows/Vuln-Check.yml)
