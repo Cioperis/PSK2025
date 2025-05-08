@@ -6,6 +6,6 @@ namespace PSK.ApiService.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        public UserRepository(AppDbContext context) : base(context) {}
+        public UserRepository(AppDbContext context) : base(context) { }
     }
 }
