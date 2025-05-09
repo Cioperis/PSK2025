@@ -29,7 +29,6 @@ try
         .WithManagementPlugin(port: 15672);
 
     var redis = builder.AddRedis("redis");
-        //.WithEndpoint(port: 6379);
 
     var postgres = builder.AddPostgres("postgres")
         .WithDataVolume()
