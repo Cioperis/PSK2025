@@ -5,6 +5,7 @@ namespace PSK.ApiService.Chatting;
 
 public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
 {
+    private static readonly ConcurrentDictionary<string, byte> activeConnections = new();
     private static readonly ConcurrentQueue<string> helperQueue = new();
     private static readonly ConcurrentQueue<string> patientQueue = new();
     private static readonly ConcurrentDictionary<string, List<string>> chatGroups = new();
@@ -32,7 +33,7 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
         else
             patientQueue.Enqueue(Context.ConnectionId);
 
-        await Clients.Caller.ReceiveSystemMessage($"You have been put into the {type} queue", DateTime.Now);
+        activeConnections.TryAdd(Context.ConnectionId, 0);
         await TryMatchPairs();
     }
 
@@ -69,8 +70,8 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
                 );
 
                 await Task.WhenAll(
-                    Clients.Client(helper).ReceiveSystemMessage("Connected to patient", DateTime.Now),
-                    Clients.Client(patient).ReceiveSystemMessage("Connected to helper", DateTime.Now)
+                    Clients.Client(helper).ReceiveSystemMessage("Connected to a patient", DateTime.Now),
+                    Clients.Client(patient).ReceiveSystemMessage("Connected to a helper", DateTime.Now)
                 );
 
                 helperQueue.TryDequeue(out _);
@@ -85,7 +86,7 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
 
     private bool IsConnectionActive(string connectionId)
     {
-        return Clients.Client(connectionId) != null;
+        return activeConnections.ContainsKey(connectionId);
     }
 
     public async Task SendMessage(string chatId, string msg)
@@ -108,11 +109,6 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
     {
         try
         {
-            if (exception != null)
-            {
-                // Log error probably
-            }
-
             var chat = chatGroups.FirstOrDefault(kvp => kvp.Value.Contains(Context.ConnectionId));
             if (chat.Key != null && chatGroups.TryRemove(chat.Key, out var users))
             {
@@ -120,7 +116,7 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
                 if (otherUser != null)
                 {
                     await Task.WhenAll(
-                            Clients.Client(otherUser).ReceiveSystemMessage("Chat ended", DateTime.Now),
+                            Clients.Client(otherUser).ReceiveSystemMessage("The other user has left the chat room", DateTime.Now),
                             Clients.Client(otherUser).ForceDisconnect()
                         );
                 }
@@ -128,6 +124,7 @@ public sealed class ChatHub : Hub<IChatHubClient>, IChatHubServer
         }
         finally
         {
+            activeConnections.TryRemove(Context.ConnectionId, out var _);
             await base.OnDisconnectedAsync(exception);
         }
     }

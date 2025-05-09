@@ -7,5 +7,5 @@ namespace PSK.ApiService.Repositories;
 
 public class DiscussionRepository : BaseRepository<Discussion>, IDiscussionRepository
 {
-    public DiscussionRepository(AppDbContext context) : base(context) {}
+    public DiscussionRepository(AppDbContext context) : base(context) { }
 }

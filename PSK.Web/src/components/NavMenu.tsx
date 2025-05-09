@@ -20,6 +20,11 @@ const NavMenu = () => {
                         </NavLink>
                     </Nav>
                     <Nav navbar>
+                        <NavLink tag={Link} to="/chat" className="text-dark align-items-center">
+                            <div>Chat</div>
+                        </NavLink>
+                    </Nav>
+                    <Nav navbar>
                         <NavLink tag={Link} to="https://www.youtube.com/watch?v=FjAaEiQfUZo" className="text-dark align-items-center">
                             <div>Sick Beats</div>
                         </NavLink>
