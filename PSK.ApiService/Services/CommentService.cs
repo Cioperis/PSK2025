@@ -36,7 +36,8 @@ public class CommentService : ICommentService
         {
             Id = newComment.Id,
             Content = newComment.Content,
-            DiscussionId = newComment.DiscussionId
+            DiscussionId = newComment.DiscussionId,
+            UpdatedAt = newComment.UpdatedAt
         };
     }
 
@@ -57,6 +58,7 @@ public class CommentService : ICommentService
             Id = commentToUpdate.Id,
             Content = commentToUpdate.Content,
             DiscussionId = commentToUpdate.DiscussionId,
+            UpdatedAt = commentToUpdate.UpdatedAt
         };
         
         return updatedCommentDto;
@@ -73,7 +75,8 @@ public class CommentService : ICommentService
         {
             Id = comment.Id,
             Content = comment.Content,
-            DiscussionId = comment.DiscussionId
+            DiscussionId = comment.DiscussionId,
+            UpdatedAt = comment.UpdatedAt
         };
     }
 
@@ -85,7 +88,8 @@ public class CommentService : ICommentService
         {
             Id = comment.Id,
             Content = comment.Content,
-            DiscussionId = comment.DiscussionId
+            DiscussionId = comment.DiscussionId,
+            UpdatedAt = comment.UpdatedAt
         });
     }
     
@@ -97,7 +101,8 @@ public class CommentService : ICommentService
         {
             Id = comment.Id,
             Content = comment.Content,
-            DiscussionId = comment.DiscussionId
+            DiscussionId = comment.DiscussionId,
+            UpdatedAt = comment.UpdatedAt
         });
     }
 

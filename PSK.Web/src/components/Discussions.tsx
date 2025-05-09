@@ -34,15 +34,15 @@ const Discussions = () => {
             {discussions.map((discussion) => (
                 <Card
                     key={discussion.id}
-                    className={"my-2 shadow-sm"}
+                    className="my-2 shadow-sm"
                     onClick={() => handleCardClick(discussion.id)}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", background: "#ddf7fa" }}
                 >
                     <CardBody>
                         <CardTitle tag="h5">{discussion.name}</CardTitle>
                         <CardText>
                             <small className={`text-muted`}>
-                                Last updated: {formatDistanceToNow(discussion.updatedAt, { addSuffix: true })}
+                                Created {formatDistanceToNow(discussion.updatedAt, { addSuffix: true })}
                             </small>
                         </CardText>
                     </CardBody>
