@@ -9,6 +9,8 @@ using Serilog;
 using Serilog.Events;
 using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Messaging;
+using PSK.ApiService.Caching.Interfaces;
+using PSK.ApiService.Caching;
 
 // ./bin/debug/net9.0/PSK.ApiService
 string basePath = AppContext.BaseDirectory;
@@ -36,7 +38,7 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
-    
+
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -44,6 +46,8 @@ try
 
     builder.AddRabbitMQClient("rabbitmq");
     builder.Services.AddSingleton<IRabbitMQueue, RabbitMQueue>();
+
+    builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
     var app = builder.Build();
 

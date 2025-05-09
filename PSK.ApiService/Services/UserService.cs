@@ -14,7 +14,7 @@ namespace PSK.ApiService.Services
             _repository = repository;
         }
 
-        public async Task CreateUserAsync(UserDTO dto)
+        public async Task<UserDTO> CreateUserAsync(UserDTO dto)
         {
             var user = new User
             {
@@ -27,6 +27,10 @@ namespace PSK.ApiService.Services
             };
 
             await _repository.AddAsync(user);
+
+            dto.Id = user.Id;
+
+            return dto;
         }
     }
 }

@@ -18,6 +18,8 @@ namespace PSK.ServiceDefaults.DTOs
             IsActive = isActive;
         }
 
+        public Guid Id { get; set; }
+
         [Required(ErrorMessage = "First name is required")]
         [MinLength(2, ErrorMessage = "First name must be at least 2 characters long")]
         [MaxLength(50, ErrorMessage = "First name cannot exceed 50 characters")]

@@ -28,6 +28,9 @@ try
     var rabbitMQ = builder.AddRabbitMQ("rabbitmq")
         .WithManagementPlugin(port: 15672);
 
+    var redis = builder.AddRedis("redis");
+        //.WithEndpoint(port: 6379);
+
     var postgres = builder.AddPostgres("postgres")
         .WithDataVolume()
         .WithPgWeb();
@@ -40,6 +43,7 @@ try
     builder.AddProject<Projects.PSK_ApiService>("api")
         .WithReference(postgresdb)
         .WithReference(rabbitMQ)
+        .WithReference(redis)
         .WaitFor(rabbitMQ);
 
     builder.AddProject<Projects.PSK_AutoMessageService>("autoMessages")

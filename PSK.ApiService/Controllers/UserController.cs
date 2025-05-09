@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PSK.ApiService.Caching.Interfaces;
 using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
@@ -15,11 +16,13 @@ namespace PSK.ApiService.Controllers
     {
         private readonly IUserService _userService;
         private readonly IRabbitMQueue _rabbitMQ;
+        private readonly ICacheService _cache;
 
-        public UserController(IUserService userService, IRabbitMQueue rabbitMQueue)
+        public UserController(IUserService userService, IRabbitMQueue rabbitMQueue, ICacheService cache)
         {
             _userService = userService;
             _rabbitMQ = rabbitMQueue;
+            _cache = cache;
         }
 
         [HttpPost("CreateUser")]
@@ -33,7 +36,9 @@ namespace PSK.ApiService.Controllers
 
             try
             {
-                await _userService.CreateUserAsync(dto);
+                var createdUser = await _userService.CreateUserAsync(dto);
+
+                await _cache.SetAsync($"user:id:{createdUser.Id}", createdUser, TimeSpan.FromHours(1));
 
                 _rabbitMQ.PublishMessage(
                     queue: "user.created",
