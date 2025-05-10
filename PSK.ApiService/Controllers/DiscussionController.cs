@@ -11,7 +11,7 @@ namespace PSK.ApiService.Controllers;
 [Route("[controller]")]
 public class DiscussionController : ControllerBase
 {
-    private readonly IDiscussionService  _discussionService;
+    private readonly IDiscussionService _discussionService;
 
     public DiscussionController(IDiscussionService discussionService)
     {
@@ -42,7 +42,7 @@ public class DiscussionController : ControllerBase
             return StatusCode(500, "An error occurred while creating the discussion");
         }
     }
-    
+
     [HttpPut]
     [ProducesResponseType(typeof(DiscussionDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -77,7 +77,7 @@ public class DiscussionController : ControllerBase
         try
         {
             DiscussionDTO? discussionDto = await _discussionService.GetDiscussionAsync(id);
-            
+
             if (discussionDto == null)
             {
                 Log.Warning("Discussion not found. Discussion ID: {DiscussionId}", id);
@@ -93,7 +93,7 @@ public class DiscussionController : ControllerBase
             return StatusCode(500, "An error occurred while fetching the discussion");
         }
     }
-    
+
     [HttpGet("all")]
     [ProducesResponseType(typeof(IEnumerable<DiscussionDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -111,7 +111,7 @@ public class DiscussionController : ControllerBase
             return StatusCode(500, "An error occurred while fetching discussions");
         }
     }
-    
+
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -121,7 +121,7 @@ public class DiscussionController : ControllerBase
         try
         {
             bool isDeleted = await _discussionService.DeleteDiscussionAsync(id);
-            
+
             if (!isDeleted)
             {
                 Log.Warning("Delete failed - discussion not found. Discussion ID: {DiscussionId}", id);

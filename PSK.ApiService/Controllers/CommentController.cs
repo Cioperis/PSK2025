@@ -66,7 +66,7 @@ public class CommentController : ControllerBase
             return NotFound(ex.Message);
         }
     }
-    
+
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CommentDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,7 +76,7 @@ public class CommentController : ControllerBase
         try
         {
             CommentDTO? commentDto = await _commentService.GetCommentAsync(id);
-            
+
             if (commentDto == null)
             {
                 Log.Warning("Comment not found. Comment ID: {CommentId}", id);
@@ -92,7 +92,7 @@ public class CommentController : ControllerBase
             return StatusCode(500, "An error occurred while fetching the comment");
         }
     }
-    
+
     [HttpGet("all")]
     [ProducesResponseType(typeof(IEnumerable<CommentDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -139,7 +139,7 @@ public class CommentController : ControllerBase
         try
         {
             bool isDeleted = await _commentService.DeleteCommentAsync(id);
-            
+
             if (!isDeleted)
             {
                 Log.Warning("Delete failed - comment not found. Comment ID: {CommentId}", id);

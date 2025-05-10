@@ -1,4 +1,9 @@
-﻿# PSK2025 Emotional Support Project 
+﻿# PSK2025 Emotional Support Project
+
+## 🛠️ Status
+
+[![CI](https://github.com/Cioperis/PSK2025/actions/workflows/CI.yml/badge.svg)](https://github.com/Cioperis/PSK2025/actions/workflows/CI.yml)
+[![Vulnerability Check](https://github.com/Cioperis/PSK2025/actions/workflows/Vuln-Check.yml/badge.svg)](https://github.com/Cioperis/PSK2025/actions/workflows/Vuln-Check.yml)
 
 ## 🚀 Technologies Used
 - .NET 9 with .NET Aspire
@@ -6,6 +11,8 @@
 - Serilog (Structured Logging)
 - PostgreSQL (Database)
 - Entity Framework Core (ORM)
+- CI + Vulnerability check
+- RabbitMQ (Message broker for asynchronous communication and task queuing)
 
 ## 🏗️ Project Structure and Layers
 This project follows a layered architecture model following an orchestrational software pattern:
@@ -15,6 +22,7 @@ This project follows a layered architecture model following an orchestrational s
 - **MigrationService layer**: Handles database operations using Entity Framework Core.
 - **AppHost layer**: Orchestrational layer. Currently starts up the API, database and React frontend.
 - **Web layer**: React-based frontend application.
+- **AutoMessageService**: Email notifications.
 
 ## 🛠️ How to Launch the Project
 
