@@ -27,7 +27,8 @@ public class DiscussionService : IDiscussionService
         return new DiscussionDTO
         {
             Id = newDiscussion.Id,
-            Name = newDiscussion.Name
+            Name = newDiscussion.Name,
+            UpdatedAt = newDiscussion.UpdatedAt
         };
     }
 
@@ -45,7 +46,8 @@ public class DiscussionService : IDiscussionService
         var updatedDiscussionDto = new DiscussionDTO
         {
             Id = discussion.Id,
-            Name = discussion.Name
+            Name = discussion.Name,
+            UpdatedAt = discussion.UpdatedAt
         };
 
         return updatedDiscussionDto;
@@ -58,7 +60,8 @@ public class DiscussionService : IDiscussionService
         return discussions.Select(discussion => new DiscussionDTO
         {
             Id = discussion.Id,
-            Name = discussion.Name
+            Name = discussion.Name,
+            UpdatedAt = discussion.UpdatedAt
         });
     }
 
@@ -72,7 +75,8 @@ public class DiscussionService : IDiscussionService
         return new DiscussionDTO
         {
             Id = discussion.Id,
-            Name = discussion.Name
+            Name = discussion.Name,
+            UpdatedAt = discussion.UpdatedAt
         };
     }
 

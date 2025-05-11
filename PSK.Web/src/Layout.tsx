@@ -10,7 +10,7 @@ const Layout = ({ children }: LayoutProps) => {
     return (
         <div>
             <NavMenu/>
-            <Container fluid className="px-3" tag="main">
+            <Container fluid className="px-5" tag="main">
                 {children}
             </Container>
         </div>
