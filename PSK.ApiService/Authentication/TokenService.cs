@@ -11,7 +11,7 @@ namespace PSK.ApiService.Authentication
     public class TokenService : ITokenService
     {
         private readonly JwtSettings _settings;
-        private readonly byte[]      _keyBytes;
+        private readonly byte[] _keyBytes;
 
         public TokenService(IOptions<JwtSettings> opts)
         {
@@ -23,10 +23,10 @@ namespace PSK.ApiService.Authentication
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub,   user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Name,               $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Role,               user.Role)
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var creds = new SigningCredentials(
@@ -35,10 +35,10 @@ namespace PSK.ApiService.Authentication
             );
 
             var token = new JwtSecurityToken(
-                issuer:             _settings.Issuer,
-                audience:           _settings.Audience,
-                claims:             claims,
-                expires:            DateTime.UtcNow.AddMinutes(_settings.ExpiresInMinutes),
+                issuer: _settings.Issuer,
+                audience: _settings.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_settings.ExpiresInMinutes),
                 signingCredentials: creds
             );
 

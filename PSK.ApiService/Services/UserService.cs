@@ -10,13 +10,13 @@ namespace PSK.ApiService.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository     _repository;
+        private readonly IUserRepository _repository;
         private readonly PasswordHasher<User> _hasher;
 
         public UserService(IUserRepository repository)
         {
             _repository = repository;
-            _hasher     = new PasswordHasher<User>();
+            _hasher = new PasswordHasher<User>();
         }
 
         public async Task CreateUserAsync(UserDTO dto)
@@ -24,12 +24,12 @@ namespace PSK.ApiService.Services
             var user = new User
             {
                 FirstName = dto.FirstName,
-                LastName  = dto.LastName,
-                Email     = dto.Email,
-                Password  = "",
-                IsActive  = dto.IsActive,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                Password = "",
+                IsActive = dto.IsActive,
                 LastLogin = DateTime.UtcNow,
-                Role      = "User"
+                Role = dto.Role
             };
 
             user.Password = _hasher.HashPassword(user, dto.Password);

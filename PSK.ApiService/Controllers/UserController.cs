@@ -16,10 +16,10 @@ namespace PSK.ApiService.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService   _userService;
-        private readonly IRabbitMQueue  _rabbitMQ;
-        private readonly ITokenService  _tokenService;
-        private readonly JwtSettings    _jwtSettings;
+        private readonly IUserService _userService;
+        private readonly IRabbitMQueue _rabbitMQ;
+        private readonly ITokenService _tokenService;
+        private readonly JwtSettings _jwtSettings;
 
         public UserController(
             IUserService userService,
@@ -27,10 +27,10 @@ namespace PSK.ApiService.Controllers
             ITokenService tokenService,
             IOptions<JwtSettings> jwtOpts)
         {
-            _userService  = userService;
-            _rabbitMQ     = rabbitMQueue;
+            _userService = userService;
+            _rabbitMQ = rabbitMQueue;
             _tokenService = tokenService;
-            _jwtSettings  = jwtOpts.Value;
+            _jwtSettings = jwtOpts.Value;
         }
 
         [HttpPost("CreateUser")]
@@ -45,8 +45,8 @@ namespace PSK.ApiService.Controllers
                 queue: "user.created",
                 message: System.Text.Json.JsonSerializer.Serialize(new
                 {
-                    email     = dto.Email,
-                    name      = $"{dto.FirstName} {dto.LastName}",
+                    email = dto.Email,
+                    name = $"{dto.FirstName} {dto.LastName}",
                     timestamp = DateTime.UtcNow
                 })
             );
@@ -64,7 +64,7 @@ namespace PSK.ApiService.Controllers
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials" });
 
-            var token   = _tokenService.CreateToken(user);
+            var token = _tokenService.CreateToken(user);
             var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes);
 
             return Ok(new AuthResponseDTO { Token = token, Expires = expires });

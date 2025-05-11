@@ -57,23 +57,23 @@ try
     var jwtAudience = "PSK.Client";
 
     builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(opts =>
-    {
-        opts.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-        };
-    });
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(opts =>
+        {
+            opts.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtIssuer,
+                ValidAudience = jwtAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            };
+        });
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
@@ -81,23 +81,25 @@ try
     {
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-            Name         = "Authorization",
-            Type         = SecuritySchemeType.Http,
-            Scheme       = "bearer",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
             BearerFormat = "JWT",
-            In           = ParameterLocation.Header,
-            Description  = "Enter ‘Bearer <token>’"
+            In = ParameterLocation.Header,
+            Description = "Enter ‘Bearer <token>’"
         });
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
-                new OpenApiSecurityScheme {
-                    Reference = new OpenApiReference {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
                         Type = ReferenceType.SecurityScheme,
-                        Id   = "Bearer"
+                        Id = "Bearer"
                     }
                 },
-                new string[] {}
+                new string[] { }
             }
         });
     });
@@ -107,9 +109,9 @@ try
         options.AddPolicy("AllowLocalhost5173", policy =>
         {
             policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
     });
 
