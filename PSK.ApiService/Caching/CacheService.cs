@@ -4,11 +4,11 @@ using StackExchange.Redis;
 
 namespace PSK.ApiService.Caching
 {
-    public class RedisCacheService : ICacheService
+    public class CacheService : ICacheService
     {
         private readonly IDatabase _db;
 
-        public RedisCacheService(IConnectionMultiplexer redis)
+        public CacheService(IConnectionMultiplexer redis)
         {
             _db = redis.GetDatabase();
         }
