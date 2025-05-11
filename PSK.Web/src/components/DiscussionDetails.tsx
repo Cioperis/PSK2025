@@ -28,7 +28,10 @@ const DiscussionDetails = () => {
             content: newCommentContent,
             discussionId: id
         }
-        createComment(newComment).then(comment => {setComments([...comments, comment]);});
+        createComment(newComment).then(comment => {
+            setComments([...comments, comment]);
+            setNewCommentContent('');
+        });
     }
 
     const handleEditDiscussionClick = () => {

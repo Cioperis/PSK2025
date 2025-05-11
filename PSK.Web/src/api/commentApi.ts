@@ -34,11 +34,11 @@ export const createComment = async (comment: CommentSchema): Promise<Comment> =>
 }
 
 export const updateComment = async (comment: Comment): Promise<Comment> => {
-    const response = await axiosInstance.put<Comment>('/Discussion', comment);
+    const response = await axiosInstance.put<Comment>('/Comment', comment);
     return response.data;
 }
 
 export const deleteComment = async (commentId: string): Promise<AxiosResponse> => {
-    const response = await axiosInstance.delete(`/Discussion/${commentId}`);
+    const response = await axiosInstance.delete(`/Comment/${commentId}`);
     return response;
 }
