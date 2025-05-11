@@ -15,6 +15,7 @@ using Serilog.Events;
 using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Messaging;
 
+// ./bin/debug/net9.0/PSK.ApiService
 string basePath = AppContext.BaseDirectory;
 
 Log.Logger = new LoggerConfiguration()

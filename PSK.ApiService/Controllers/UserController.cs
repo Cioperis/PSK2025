@@ -39,19 +39,29 @@ namespace PSK.ApiService.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _userService.CreateUserAsync(dto);
+            try
+            {
+                await _userService.CreateUserAsync(dto);
 
-            _rabbitMQ.PublishMessage(
-                queue: "user.created",
-                message: System.Text.Json.JsonSerializer.Serialize(new
-                {
-                    email = dto.Email,
-                    name = $"{dto.FirstName} {dto.LastName}",
-                    timestamp = DateTime.UtcNow
-                })
-            );
+                _rabbitMQ.PublishMessage(
+                    queue: "user.created",
+                    message: System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        email = dto.Email,
+                        name = $"{dto.FirstName} {dto.LastName}",
+                        role = dto.Role.ToString(),
+                        timestamp = DateTime.UtcNow
+                    })
+                );
 
-            return Ok(new { message = "User created successfully" });
+                Log.Information("User created successfully: {Email}, role {Role}", dto.Email, dto.Role);
+                return Ok(new { message = "User created successfully" });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error creating user: {Email}", dto.Email);
+                return StatusCode(500, new { message = "An error occurred while creating the user" });
+            }
         }
 
         [HttpPost("Login")]
@@ -60,14 +70,30 @@ namespace PSK.ApiService.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.AuthenticateAsync(dto.Email, dto.Password);
-            if (user == null)
-                return Unauthorized(new { message = "Invalid credentials" });
+            try
+            {
+                var user = await _userService.AuthenticateAsync(dto.Email, dto.Password);
+                if (user == null)
+                {
+                    Log.Warning("Invalid login attempt: {Email}", dto.Email);
+                    return Unauthorized(new { message = "Invalid credentials" });
+                }
 
-            var token = _tokenService.CreateToken(user);
-            var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes);
+                var token = _tokenService.CreateToken(user);
+                var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes);
 
-            return Ok(new AuthResponseDTO { Token = token, Expires = expires });
+                Log.Information("User logged in successfully: {Email}", dto.Email);
+                return Ok(new AuthResponseDTO
+                {
+                    Token = token,
+                    Expires = expires
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error during login: {Email}", dto.Email);
+                return StatusCode(500, new { message = "An error occurred during login" });
+            }
         }
 
         [Authorize]

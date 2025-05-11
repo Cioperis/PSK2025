@@ -8,11 +8,8 @@ namespace PSK.ApiService.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        private readonly AppDbContext _context;
-
         public UserRepository(AppDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<User?> GetByEmailAsync(string email)

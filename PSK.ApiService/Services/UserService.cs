@@ -21,18 +21,17 @@ namespace PSK.ApiService.Services
 
         public async Task CreateUserAsync(UserDTO dto)
         {
+            var hashedPassword = _hasher.HashPassword(null!, dto.Password);
             var user = new User
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                Password = "",
+                Password = hashedPassword,
                 IsActive = dto.IsActive,
                 LastLogin = DateTime.UtcNow,
                 Role = dto.Role
             };
-
-            user.Password = _hasher.HashPassword(user, dto.Password);
 
             await _repository.AddAsync(user);
         }
@@ -43,8 +42,8 @@ namespace PSK.ApiService.Services
             if (user == null || !user.IsActive)
                 return null;
 
-            var res = _hasher.VerifyHashedPassword(user, user.Password, password);
-            return res == PasswordVerificationResult.Failed ? null : user;
+            var result = _hasher.VerifyHashedPassword(user, user.Password, password);
+            return result == PasswordVerificationResult.Failed ? null : user;
         }
     }
 }

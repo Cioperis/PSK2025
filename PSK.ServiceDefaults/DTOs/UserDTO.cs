@@ -4,12 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PSK.ServiceDefaults.Models;
 
 namespace PSK.ServiceDefaults.DTOs
 {
     public class UserDTO
     {
-        public UserDTO(string firstName, string lastName, string email, string password, bool isActive, string role)
+        public UserDTO(string firstName, string lastName, string email, string password, bool isActive, UserRole role)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -53,6 +54,6 @@ namespace PSK.ServiceDefaults.DTOs
 
         [Required(ErrorMessage = "Role is required")]
         [Display(Name = "User Role")]
-        public string Role { get; set; }
+        public UserRole Role { get; set; }
     }
 }
