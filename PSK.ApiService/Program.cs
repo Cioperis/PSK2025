@@ -57,7 +57,8 @@ try
     builder.AddRabbitMQClient("rabbitmq");
     builder.Services.AddSingleton<IRabbitMQueue, RabbitMQueue>();
 
-    builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+    builder.AddRedisClient("redis");
+    builder.Services.AddSingleton<ICacheService, CacheService>();
 
     var app = builder.Build();
 
