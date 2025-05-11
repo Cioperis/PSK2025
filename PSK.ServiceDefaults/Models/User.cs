@@ -14,5 +14,6 @@ namespace PSK.ServiceDefaults.Models
         public required string Password { get; set; }
         public required bool IsActive { get; set; }
         public DateTime LastLogin { get; set; }
+        public required string Role { get; set; } = "User";
     }
 }
