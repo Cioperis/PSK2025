@@ -92,11 +92,11 @@ public class CommentService : ICommentService
             UpdatedAt = comment.UpdatedAt
         });
     }
-    
+
     public async Task<IEnumerable<CommentDTO>> GetAllCommentsOfDiscussionAsync(Guid discussionId)
     {
         IEnumerable<Comment> comments = await _commentRepository.GetAllCommentsByDiscussionIdAsync(discussionId);
-        
+
         return comments.Select(comment => new CommentDTO
         {
             Id = comment.Id,

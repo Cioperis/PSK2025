@@ -16,7 +16,7 @@ public class CommentController : ControllerBase
     {
         _commentService = commentService;
     }
-    
+
     [HttpPost]
     [ProducesResponseType(typeof(CommentDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -41,7 +41,7 @@ public class CommentController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    
+
     [HttpPut]
     [ProducesResponseType(typeof(CommentDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,7 +53,7 @@ public class CommentController : ControllerBase
             Log.Warning("Invalid model state for UpdateComment request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
-        
+
         try
         {
             CommentDTO updatedComment = await _commentService.UpdateCommentAsync(comment);
@@ -110,7 +110,7 @@ public class CommentController : ControllerBase
             return StatusCode(500, "An error occurred while fetching comments");
         }
     }
-    
+
     [HttpGet("ofDiscussion/{discussionId}")]
     [ProducesResponseType(typeof(IEnumerable<CommentDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -129,7 +129,7 @@ public class CommentController : ControllerBase
             return StatusCode(500, "An error occurred while fetching comments");
         }
     }
-    
+
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

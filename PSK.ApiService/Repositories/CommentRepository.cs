@@ -7,7 +7,7 @@ namespace PSK.ApiService.Repositories;
 
 public class CommentRepository : BaseRepository<Comment>, ICommentRepository
 {
-    public CommentRepository(AppDbContext context) : base(context) {}
+    public CommentRepository(AppDbContext context) : base(context) { }
 
     public async Task<IEnumerable<Comment>> GetAllCommentsByDiscussionIdAsync(Guid discussionId)
     {
