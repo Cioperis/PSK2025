@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using PSK.ApiService.Authentication;
 using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
-using RabbitMQ.Client;
 using Serilog;
-using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PSK.ApiService.Controllers
 {
@@ -15,21 +18,26 @@ namespace PSK.ApiService.Controllers
     {
         private readonly IUserService _userService;
         private readonly IRabbitMQueue _rabbitMQ;
+        private readonly ITokenService _tokenService;
+        private readonly JwtSettings _jwtSettings;
 
-        public UserController(IUserService userService, IRabbitMQueue rabbitMQueue)
+        public UserController(
+            IUserService userService,
+            IRabbitMQueue rabbitMQueue,
+            ITokenService tokenService,
+            IOptions<JwtSettings> jwtOpts)
         {
             _userService = userService;
             _rabbitMQ = rabbitMQueue;
+            _tokenService = tokenService;
+            _jwtSettings = jwtOpts.Value;
         }
 
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser([FromBody] UserDTO dto)
         {
             if (!ModelState.IsValid)
-            {
-                Log.Warning("Invalid model state for CreateUser request: {@ModelState}", ModelState);
                 return BadRequest(ModelState);
-            }
 
             try
             {
@@ -41,18 +49,59 @@ namespace PSK.ApiService.Controllers
                     {
                         email = dto.Email,
                         name = $"{dto.FirstName} {dto.LastName}",
+                        role = dto.Role.ToString(),
                         timestamp = DateTime.UtcNow
                     })
                 );
 
-                Log.Information("User created successfully: {@UserDTO}", dto);
+                Log.Information("User created successfully: {Email}, role {Role}", dto.Email, dto.Role);
                 return Ok(new { message = "User created successfully" });
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "An error occurred while creating a user: {@UserDTO}", dto);
+                Log.Error(ex, "Error creating user: {Email}", dto.Email);
                 return StatusCode(500, new { message = "An error occurred while creating the user" });
             }
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var user = await _userService.AuthenticateAsync(dto.Email, dto.Password);
+                if (user == null)
+                {
+                    Log.Warning("Invalid login attempt: {Email}", dto.Email);
+                    return Unauthorized(new { message = "Invalid credentials" });
+                }
+
+                var token = _tokenService.CreateToken(user);
+                var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes);
+
+                Log.Information("User logged in successfully: {Email}", dto.Email);
+                return Ok(new AuthResponseDTO
+                {
+                    Token = token,
+                    Expires = expires
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error during login: {Email}", dto.Email);
+                return StatusCode(500, new { message = "An error occurred during login" });
+            }
+        }
+
+        [Authorize]
+        [HttpGet("Me")]
+        public IActionResult Me()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            return Ok(new { Email = email });
         }
     }
 }
