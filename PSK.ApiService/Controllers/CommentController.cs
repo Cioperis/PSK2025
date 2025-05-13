@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
@@ -8,6 +9,7 @@ namespace PSK.ApiService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class CommentController : ControllerBase
 {
     private readonly ICommentService _commentService;
@@ -107,6 +109,25 @@ public class CommentController : ControllerBase
         catch (Exception ex)
         {
             Log.Error(ex, "Error retrieving all comments");
+            return StatusCode(500, "An error occurred while fetching comments");
+        }
+    }
+
+    [HttpGet("ofDiscussion/{discussionId}")]
+    [ProducesResponseType(typeof(IEnumerable<CommentDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllCommentsOfDiscussion(Guid discussionId)
+    {
+        try
+        {
+            var commentDtos = await _commentService.GetAllCommentsOfDiscussionAsync(discussionId);
+            Log.Information("Retrieved all comments of discussion {discussionId}. " +
+                            "Count: {CommentCount}", discussionId, commentDtos.Count());
+            return Ok(commentDtos);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error retrieving comments");
             return StatusCode(500, "An error occurred while fetching comments");
         }
     }

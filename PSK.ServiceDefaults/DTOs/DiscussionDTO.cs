@@ -8,4 +8,5 @@ public class DiscussionDTO
     public Guid Id { get; set; }
     [Required(ErrorMessage = "Name is required")]
     public string Name { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

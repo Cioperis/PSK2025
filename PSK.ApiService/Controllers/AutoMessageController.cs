@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PSK.ApiService.Services.Interfaces;
 
 namespace PSK.ApiService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class AutoMessageController : ControllerBase
     {
         private readonly IAutoMessageService _service;

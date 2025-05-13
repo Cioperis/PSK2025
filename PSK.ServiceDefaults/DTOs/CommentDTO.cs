@@ -9,4 +9,6 @@ public class CommentDTO
     public string Content { get; set; }
     [Required(ErrorMessage = "DiscussionId is required")]
     public Guid DiscussionId { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
 }
