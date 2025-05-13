@@ -23,10 +23,16 @@ namespace PSK.ApiService.Services
                 Email = dto.Email,
                 Password = dto.Password,
                 IsActive = dto.IsActive,
+                IsSubscribed = dto.IsSubscribed,
                 LastLogin = DateTime.UtcNow
             };
 
             await _repository.AddAsync(user);
+        }
+
+        public async Task UserSubscribed(Guid id)
+        {
+            await _repository.FlipUserSubscriptionStatusAsync(id);
         }
     }
 }

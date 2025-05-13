@@ -13,6 +13,7 @@ namespace PSK.ServiceDefaults.Models
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required bool IsActive { get; set; }
+        public required bool IsSubscribed { get; set; } = false;
         public DateTime LastLogin { get; set; }
     }
 }
