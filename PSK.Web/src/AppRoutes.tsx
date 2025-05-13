@@ -1,5 +1,6 @@
 ﻿import Discussions from "./components/Discussions.tsx";
 import Chatting from "./components/Chatting.tsx";
+import DiscussionDetails from "./components/DiscussionDetails.tsx";
 
 const AppRoutes = [
     {
@@ -9,6 +10,10 @@ const AppRoutes = [
     {
         path: "/chat",
         element: <Chatting />
+    },
+    {
+        path: "/discussion/:id",
+        element: <DiscussionDetails />
     }
 
 ];

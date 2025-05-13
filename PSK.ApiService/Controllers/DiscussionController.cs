@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
@@ -9,6 +10,7 @@ namespace PSK.ApiService.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class DiscussionController : ControllerBase
 {
     private readonly IDiscussionService _discussionService;

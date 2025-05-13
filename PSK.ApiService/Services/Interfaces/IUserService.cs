@@ -1,4 +1,6 @@
-﻿using PSK.ServiceDefaults.DTOs;
+﻿using System.Threading.Tasks;
+using PSK.ServiceDefaults.DTOs;
+using PSK.ServiceDefaults.Models;
 
 namespace PSK.ApiService.Services.Interfaces
 {
@@ -6,5 +8,6 @@ namespace PSK.ApiService.Services.Interfaces
     {
         Task CreateUserAsync(UserDTO dto);
         Task UserSubscribed(Guid id);
+        Task<User?> AuthenticateAsync(string email, string password);
     }
 }

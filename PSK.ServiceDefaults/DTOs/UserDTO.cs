@@ -4,18 +4,20 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PSK.ServiceDefaults.Models;
 
 namespace PSK.ServiceDefaults.DTOs
 {
     public class UserDTO
     {
-        public UserDTO(string firstName, string lastName, string email, string password, bool isActive)
+        public UserDTO(string firstName, string lastName, string email, string password, bool isActive, UserRole role)
         {
             FirstName = firstName;
             LastName = lastName;
             Email = email;
             Password = password;
             IsActive = isActive;
+            Role = role;
         }
 
         [Required(ErrorMessage = "First name is required")]
@@ -24,11 +26,11 @@ namespace PSK.ServiceDefaults.DTOs
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
+        [Required(ErrorMessage = "Last name is required")]
         [MinLength(2, ErrorMessage = "Last name must be at least 2 characters long")]
         [MaxLength(50, ErrorMessage = "Last name cannot exceed 50 characters")]
         [Display(Name = "Last Name")]
         [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Last name can only contain letters")]
-        [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
@@ -42,7 +44,8 @@ namespace PSK.ServiceDefaults.DTOs
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
         [MaxLength(100, ErrorMessage = "Password cannot exceed 100 characters")]
         [Display(Name = "Password")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$", ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$",
+            ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number")]
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Activity is required")]
@@ -53,5 +56,9 @@ namespace PSK.ServiceDefaults.DTOs
         [Required(ErrorMessage = "Subscription status is required")]
         [RegularExpression(@"^(true|false)$", ErrorMessage = "Invalid subscription status")]
         public bool IsSubscribed { get; set; }
+        
+        [Required(ErrorMessage = "Role is required")]
+        [Display(Name = "User Role")]
+        public UserRole Role { get; set; }
     }
 }
