@@ -5,6 +5,7 @@ using PSK.ApiService.Repositories.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 using PSK.ServiceDefaults.Models;
+using PSK.ServiceDefaults.Schema;
 
 namespace PSK.ApiService.Services
 {
@@ -19,7 +20,7 @@ namespace PSK.ApiService.Services
             _hasher = new PasswordHasher<User>();
         }
 
-        public async Task CreateUserAsync(UserDTO dto)
+        public async Task<CreateUserSchema> CreateUserAsync(UserDTO dto)
         {
             var hashedPassword = _hasher.HashPassword(null!, dto.Password);
             var user = new User
@@ -34,6 +35,16 @@ namespace PSK.ApiService.Services
             };
 
             await _repository.AddAsync(user);
+
+            var result = new CreateUserSchema
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+            };
+
+            return result;
         }
 
         public async Task<User?> AuthenticateAsync(string email, string password)

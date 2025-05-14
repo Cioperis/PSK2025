@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PSK.ApiService.Caching.Interfaces;
 using Microsoft.Extensions.Options;
 using PSK.ApiService.Authentication;
 using PSK.ApiService.Messaging.Interfaces;
@@ -20,17 +21,20 @@ namespace PSK.ApiService.Controllers
         private readonly IRabbitMQueue _rabbitMQ;
         private readonly ITokenService _tokenService;
         private readonly JwtSettings _jwtSettings;
+        private readonly ICacheService _cache;
 
         public UserController(
             IUserService userService,
             IRabbitMQueue rabbitMQueue,
             ITokenService tokenService,
-            IOptions<JwtSettings> jwtOpts)
+            IOptions<JwtSettings> jwtOpts,
+            ICacheService cache)
         {
             _userService = userService;
             _rabbitMQ = rabbitMQueue;
             _tokenService = tokenService;
             _jwtSettings = jwtOpts.Value;
+            _cache = cache;
         }
 
         [HttpPost("CreateUser")]
@@ -41,7 +45,9 @@ namespace PSK.ApiService.Controllers
 
             try
             {
-                await _userService.CreateUserAsync(dto);
+                var createdUser = await _userService.CreateUserAsync(dto);
+
+                await _cache.SetAsync($"user:id:{createdUser.Id}", createdUser, TimeSpan.FromHours(1));
 
                 _rabbitMQ.PublishMessage(
                     queue: "user.created",
