@@ -16,6 +16,7 @@ using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Messaging;
 using PSK.ApiService.Caching.Interfaces;
 using PSK.ApiService.Caching;
+using PSK.ApiService.Middleware;
 
 // ./bin/debug/net9.0/PSK.ApiService
 string basePath = AppContext.BaseDirectory;
@@ -140,6 +141,8 @@ try
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
+    
+    app.UseMiddleware<ExecutionLogMiddleware>();
 
     app.MapControllers();
 
