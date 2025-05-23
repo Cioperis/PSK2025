@@ -5,6 +5,7 @@ import {Button, Card, CardBody, CardText, CardTitle, Input, InputGroup} from "re
 import {getAllCommentsByDiscussionId, Comment, createComment, CommentSchema} from "../api/commentApi.ts";
 import {formatDistanceToNow} from "date-fns";
 import EditDiscussionModal from "./EditDiscussionModal.tsx";
+import {ToastContainer} from "react-toastify";
 
 const DiscussionDetails = () => {
     const {id} = useParams<{ id: string }>();
@@ -75,6 +76,8 @@ const DiscussionDetails = () => {
                                  setOpen={setIsEditDiscussionModalOpen}
                                  setDiscussion={setDiscussion}
             />
+
+            <ToastContainer/>
         </>
     );
 }

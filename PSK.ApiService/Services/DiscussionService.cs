@@ -39,6 +39,7 @@ public class DiscussionService : IDiscussionService
             throw new Exception($"Discussion {discussion.Id} not found");
 
         discussionToUpdate.Name = discussion.Name;
+        discussionToUpdate.Version++;
 
         _discussionRepository.Update(discussionToUpdate);
         await _discussionRepository.SaveChangesAsync();

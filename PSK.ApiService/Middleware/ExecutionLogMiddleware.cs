@@ -10,8 +10,8 @@ public class ExecutionLogMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExecutionLogMiddleware> _logger;
     private readonly bool _enabled;
-    private string[] _excludedPaths;
-    
+    private readonly string[] _excludedPaths;
+
     public ExecutionLogMiddleware(RequestDelegate next, ILogger<ExecutionLogMiddleware> logger, IConfiguration configuration)
     {
         _next = next;
@@ -29,21 +29,20 @@ public class ExecutionLogMiddleware
         }
 
         var endpoint = context.GetEndpoint();
-        
+
         var controllerActionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
         var controllerName = controllerActionDescriptor?.ControllerName;
         var actionName = controllerActionDescriptor?.ActionName;
-        var fullMethodName = $"{controllerActionDescriptor?.ControllerTypeInfo.FullName}.{actionName}";
 
         var userName = context.User.Identity?.Name;
         var role = context.User.Claims
             .Where(c => c.Type == ClaimTypes.Role)
             .Select(c => c.Value).FirstOrDefault();
-        
+
         _logger.LogInformation(
             "ExecutionLogMiddleware: User {UserName} with role {Role} accessed {Controller}.{Action} at {Timestamp}",
             userName, role, controllerName, actionName, DateTime.UtcNow);
-        
+
         await _next(context);
         return;
     }

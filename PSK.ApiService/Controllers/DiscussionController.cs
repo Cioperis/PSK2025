@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
@@ -62,6 +64,12 @@ public class DiscussionController : ControllerBase
             DiscussionDTO updatedDiscussion = await _discussionService.UpdateDiscussionAsync(discussion);
             Log.Information("Discussion updated successfully. Discussion ID: {DiscussionId}, Data: {@Discussion}", discussion.Id, updatedDiscussion);
             return Ok(updatedDiscussion);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            Log.Warning("Concurrency conflict when updating discussion {DiscussionId}: {Message}", discussion.Id, ex.Message);
+
+            return Conflict("The record was modified by another user, update canceled");
         }
         catch (Exception ex)
         {
