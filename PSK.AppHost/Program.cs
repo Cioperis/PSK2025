@@ -29,6 +29,12 @@ try
         .WithManagementPlugin(port: 15672);
 
     var redis = builder.AddRedis("redis");
+    
+    var mongo = builder.AddMongoDB("mongo")
+        .WithDataVolume()
+        .WithMongoExpress();
+
+    var mongodb = mongo.AddDatabase("mongodb");
 
     var postgres = builder.AddPostgres("postgres")
         .WithDataVolume()
@@ -40,10 +46,12 @@ try
         .WithReference(postgresdb);
 
     builder.AddProject<Projects.PSK_ApiService>("api")
+        .WithReference(mongodb)
         .WithReference(postgresdb)
         .WithReference(rabbitMQ)
         .WithReference(redis)
-        .WaitFor(rabbitMQ);
+        .WaitFor(rabbitMQ)
+        .WaitFor(mongodb);
 
     builder.AddProject<Projects.PSK_AutoMessageService>("autoMessages")
         .WithReference(rabbitMQ)

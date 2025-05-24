@@ -4,6 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PSK.ApiService.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using PSK.ApiService.AuditLogging;
 using PSK.ApiService.Data;
 using PSK.ApiService.Repositories.Interfaces;
 using PSK.ApiService.Repositories;
@@ -43,6 +46,15 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
+
+    builder.Services.AddScoped<IMongoDatabase>(provider =>
+    {
+        var connectionString = provider.GetRequiredService<IConfiguration>()["mongodb.connectionString"];
+        var client = new MongoClient(connectionString);
+        return client.GetDatabase("AuditLogs");
+    });
+    
+    builder.Services.AddAuditLogging(builder.Configuration);
 
     builder.Services.Configure<JwtSettings>(options =>
     {

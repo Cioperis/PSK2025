@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using PSK.ApiService.AuditLogging;
 using PSK.ApiService.Data;
 using PSK.ServiceDefaults.Models;
 using Serilog;
+using ILogger = DnsClient.Internal.ILogger;
 
 namespace PSK.ApiService.Middleware;
 
@@ -19,7 +21,7 @@ public class ExecutionLogMiddleware
         _excludedPaths = configuration.GetSection("AuditLog:ExcludedPaths").Get<string[]>() ?? new string[0];
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, IAuditLogger logger)
     {
         if (!_enabled || _excludedPaths.Any(p => context.Request.Path.StartsWithSegments(p)))
         {
@@ -33,16 +35,8 @@ public class ExecutionLogMiddleware
         var controllerName = controllerActionDescriptor?.ControllerName;
         var actionName = controllerActionDescriptor?.ActionName;
 
-        var userName = context.User.Identity?.Name;
-        var role = context.User.Claims
-            .Where(c => c.Type == ClaimTypes.Role)
-            .Select(c => c.Value).FirstOrDefault();
-
-        Log.Information(
-            "ExecutionLogMiddleware: User {UserName} with role {Role} accessed {Controller}.{Action} at {Timestamp}",
-            userName, role, controllerName, actionName, DateTime.UtcNow);
+        await logger.LogAsync(context, controllerName, actionName);
 
         await _next(context);
-        return;
     }
 }

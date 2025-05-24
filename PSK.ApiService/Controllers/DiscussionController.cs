@@ -68,7 +68,6 @@ public class DiscussionController : ControllerBase
         catch (DbUpdateConcurrencyException ex)
         {
             Log.Warning("Concurrency conflict when updating discussion {DiscussionId}: {Message}", discussion.Id, ex.Message);
-
             return Conflict("The record was modified by another user, update canceled");
         }
         catch (Exception ex)
