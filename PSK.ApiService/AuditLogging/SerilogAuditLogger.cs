@@ -3,7 +3,7 @@ using Serilog;
 
 namespace PSK.ApiService.AuditLogging;
 
-public class SerilogAuditLogger: IAuditLogger
+public class SerilogAuditLogger : IAuditLogger
 {
     public Task LogAsync(HttpContext context, string controllerName, string actionName)
     {
@@ -14,7 +14,7 @@ public class SerilogAuditLogger: IAuditLogger
         Log.Information(
             "ExecutionLogMiddleware: User {UserName} with role {Role} accessed {Controller}.{Action} at {Timestamp}",
             userName, role, controllerName, actionName, DateTime.UtcNow);
-        
+
         return Task.CompletedTask;
     }
 }

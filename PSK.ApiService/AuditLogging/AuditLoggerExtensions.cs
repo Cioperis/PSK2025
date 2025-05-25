@@ -6,17 +6,17 @@ public static class AuditLoggerExtensions
     {
         services.AddTransient<SerilogAuditLogger>();
         services.AddTransient<MongoDbAuditLogger>();
-        
-        services.AddScoped<IAuditLogger>(provider => 
+
+        services.AddScoped<IAuditLogger>(provider =>
             ResolveLoggerStrategy(provider, configuration));
-        
+
         return services;
     }
 
     private static IAuditLogger ResolveLoggerStrategy(IServiceProvider provider, IConfiguration configuration)
     {
         var loggerType = configuration["AuditLog:LoggerType"] ?? "Serilog";
-        
+
         return loggerType switch
         {
             "Serilog" => provider.GetRequiredService<SerilogAuditLogger>(),

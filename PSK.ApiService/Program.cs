@@ -46,7 +46,7 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
-    
+
     builder.AddMongoDBClient("mongodb");
     builder.Services.AddAuditLogging(builder.Configuration);
 

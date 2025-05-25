@@ -29,7 +29,7 @@ try
         .WithManagementPlugin(port: 15672);
 
     var redis = builder.AddRedis("redis");
-    
+
     var mongo = builder.AddMongoDB("mongo")
         .WithDataVolume()
         .WithMongoExpress();
