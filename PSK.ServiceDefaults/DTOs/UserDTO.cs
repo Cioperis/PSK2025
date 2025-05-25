@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PSK.ServiceDefaults.Models;
+using PSK.ServiceDefaults.Models.Enums;
 
 namespace PSK.ServiceDefaults.DTOs
 {
@@ -51,11 +51,6 @@ namespace PSK.ServiceDefaults.DTOs
         [Required(ErrorMessage = "Activity is required")]
         [Display(Name = "Is user active?")]
         public bool IsActive { get; set; }
-
-        [Display(Name = "Is user subscribed?")]
-        [Required(ErrorMessage = "Subscription status is required")]
-        [RegularExpression(@"^(true|false)$", ErrorMessage = "Invalid subscription status")]
-        public bool IsSubscribed { get; set; }
         
         [Required(ErrorMessage = "Role is required")]
         [Display(Name = "User Role")]

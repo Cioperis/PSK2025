@@ -29,7 +29,6 @@ namespace PSK.ApiService.Services
                 Email = dto.Email,
                 Password = hashedPassword,
                 IsActive = dto.IsActive,
-                IsSubscribed = dto.IsSubscribed,
                 LastLogin = DateTime.UtcNow,
                 Role = dto.Role
             };
@@ -37,10 +36,6 @@ namespace PSK.ApiService.Services
             await _repository.AddAsync(user);
         }
 
-        public async Task UserSubscribed(Guid id)
-        {
-            await _repository.FlipUserSubscriptionStatusAsync(id);
-        }
         public async Task<User?> AuthenticateAsync(string email, string password)
         {
             var user = await _repository.GetByEmailAsync(email);

@@ -14,6 +14,8 @@ using Serilog;
 using Serilog.Events;
 using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Messaging;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 // ./bin/debug/net9.0/PSK.ApiService
 string basePath = AppContext.BaseDirectory;
@@ -37,6 +39,7 @@ try
     builder.Services.AddScoped<IAutoMessageRepository, AutoMessageRepository>();
     builder.Services.AddScoped<IAutoMessageService, AutoMessageService>();
     builder.Services.AddScoped<IDiscussionRepository, DiscussionRepository>();
+    builder.Services.AddScoped<IUserMessageRepository, UserMessageRepository>();
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
@@ -119,7 +122,15 @@ try
     builder.AddRabbitMQClient("rabbitmq");
     builder.Services.AddSingleton<IRabbitMQueue, RabbitMQueue>();
 
+
+    builder.Services.AddHangfire(config =>
+        config.UseStorage(new PostgreSqlStorage(builder.Configuration.GetConnectionString("postgresdb")))
+    );
+    builder.Services.AddHangfireServer();
+
     var app = builder.Build();
+
+    app.UseHangfireDashboard();
 
     app.UseSwagger();
     app.UseSwaggerUI();

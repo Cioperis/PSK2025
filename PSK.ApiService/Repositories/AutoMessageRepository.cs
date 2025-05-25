@@ -2,6 +2,7 @@
 using PSK.ApiService.Repositories.Interfaces;
 using PSK.ApiService.Repositories;
 using PSK.ServiceDefaults.Models;
+using Microsoft.EntityFrameworkCore;
 
 public class AutoMessageRepository : BaseRepository<PositiveMessage>, IAutoMessageRepository
 {
