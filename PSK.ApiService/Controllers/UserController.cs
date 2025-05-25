@@ -10,7 +10,7 @@ using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 using Serilog;
-using PSK.ApiService.Repositories.Interfaces; 
+using PSK.ApiService.Repositories.Interfaces;
 
 namespace PSK.ApiService.Controllers
 {
