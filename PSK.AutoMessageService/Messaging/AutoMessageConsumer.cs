@@ -31,7 +31,7 @@ namespace PSK.AutoMessageService.Messaging
                     message.Email,
                     subject,
                     body,
-                    isHtml: true 
+                    isHtml: true
                 );
 
                 Log.Information("Positive message sent to {Email}", message.Email);

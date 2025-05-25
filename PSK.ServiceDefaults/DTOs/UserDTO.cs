@@ -51,7 +51,7 @@ namespace PSK.ServiceDefaults.DTOs
         [Required(ErrorMessage = "Activity is required")]
         [Display(Name = "Is user active?")]
         public bool IsActive { get; set; }
-        
+
         [Required(ErrorMessage = "Role is required")]
         [Display(Name = "User Role")]
         public UserRole Role { get; set; }

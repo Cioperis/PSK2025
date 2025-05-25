@@ -56,7 +56,7 @@ namespace PSK.ApiService.Services
 
         public async Task<ScheduleUserMessageResult> ScheduleUserCustomMessageAsync(Guid userId, UserMessageRequest request)
         {
-            var user = await _userRepo.GetByIdAsync(userId); 
+            var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return new ScheduleUserMessageResult { Success = false, ErrorMessage = "User not found." };
 
@@ -102,7 +102,7 @@ namespace PSK.ApiService.Services
 
             var payload = new AutoMessageDTO
             {
-                Email = msg.User.Email,    
+                Email = msg.User.Email,
                 Content = msg.Content
             };
 

@@ -9,7 +9,7 @@ namespace PSK.ServiceDefaults.Schema
     public class ScheduleUserMessageResult
     {
         public bool Success { get; set; }
-        public Guid MessageId { get; set; }   
-        public required string ErrorMessage { get; set; } 
+        public Guid MessageId { get; set; }
+        public required string ErrorMessage { get; set; }
     }
 }
