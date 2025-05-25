@@ -44,7 +44,7 @@ namespace PSK.ServiceDefaults.DTOs
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
         [MaxLength(100, ErrorMessage = "Password cannot exceed 100 characters")]
         [Display(Name = "Password")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$",
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$",
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number")]
         public string Password { get; set; }
 
