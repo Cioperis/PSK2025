@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PSK.ApiService.Services.Interfaces;
+using System.Security.Claims;
 
 namespace PSK.ApiService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+    //[Authorize]
     public class AutoMessageController : ControllerBase
     {
         private readonly IAutoMessageService _service;
@@ -16,20 +17,18 @@ namespace PSK.ApiService.Controllers
             _service = service;
         }
 
-        [HttpGet("random")]
-        public async Task<IActionResult> GetRandom()
+        [HttpPost("send-random")]
+        public async Task<IActionResult> SendRandomPositiveMessage()
         {
-            var message = await _service.GetRandomMessageAsync();
-            if (message == null)
-                return NotFound("No active messages found.");
-            return Ok(message);
-        }
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized("Email claim not found.");
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string keyword)
-        {
-            var results = await _service.SearchMessagesAsync(keyword);
-            return Ok(results);
+            var result = await _service.EnqueueRandomPositiveMessageAsync(email);
+            if (!result)
+                return NotFound("No active positive messages found.");
+
+            return Ok(new { message = "Positive message enqueued successfully." });
         }
     }
 }

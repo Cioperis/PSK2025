@@ -12,8 +12,10 @@ namespace PSK.ApiService.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<AutoMessage> AutoMessages { get; set; }
+        public DbSet<PositiveMessage> AutoMessages { get; set; }
         public DbSet<Discussion> Discussions { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<PositiveMessage> PositiveMessage { get; set; }
+        public DbSet<UserMessage> UserMessage { get; set; }
     }
 }

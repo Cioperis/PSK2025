@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PSK.ServiceDefaults.Models
+namespace PSK.ServiceDefaults.DTOs
 {
-    public class AutoMessage : BaseClass
+    public class AutoMessageDTO
     {
+        public required string Email { get; set; }
         public required string Content { get; set; }
-        public bool IsActive { get; set; } = true;
+        public DateTime Timestamp { get; set; }
     }
 }

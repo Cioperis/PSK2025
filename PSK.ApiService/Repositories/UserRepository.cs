@@ -22,6 +22,7 @@ namespace PSK.ApiService.Repositories
 
             Update(user);
             await SaveChangesAsync();
+        }
 
         public async Task<User?> GetByEmailAsync(string email)
         {
