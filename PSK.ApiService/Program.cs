@@ -46,14 +46,8 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IDiscussionService, DiscussionService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
-
-    builder.Services.AddScoped<IMongoDatabase>(provider =>
-    {
-        var connectionString = provider.GetRequiredService<IConfiguration>()["mongodb.connectionString"];
-        var client = new MongoClient(connectionString);
-        return client.GetDatabase("AuditLogs");
-    });
     
+    builder.AddMongoDBClient("mongodb");
     builder.Services.AddAuditLogging(builder.Configuration);
 
     builder.Services.Configure<JwtSettings>(options =>
