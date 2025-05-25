@@ -10,7 +10,6 @@ namespace PSK.ApiService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    //[Authorize]
     public class AutoMessageController : ControllerBase
     {
         private readonly IAutoMessageService _service;
