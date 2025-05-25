@@ -16,6 +16,8 @@ using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Messaging;
 using Hangfire;
 using Hangfire.PostgreSql;
+using PSK.ApiService.Caching.Interfaces;
+using PSK.ApiService.Caching;
 
 // ./bin/debug/net9.0/PSK.ApiService
 string basePath = AppContext.BaseDirectory;
@@ -127,6 +129,8 @@ try
         config.UseStorage(new PostgreSqlStorage(builder.Configuration.GetConnectionString("postgresdb")))
     );
     builder.Services.AddHangfireServer();
+    builder.AddRedisClient("redis");
+    builder.Services.AddSingleton<ICacheService, CacheService>();
 
     var app = builder.Build();
 

@@ -3,12 +3,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PSK.ApiService.Caching.Interfaces;
 using Microsoft.Extensions.Options;
 using PSK.ApiService.Authentication;
 using PSK.ApiService.Messaging.Interfaces;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
 using Serilog;
+using PSK.ApiService.Repositories.Interfaces;
 
 namespace PSK.ApiService.Controllers
 {
@@ -20,17 +22,23 @@ namespace PSK.ApiService.Controllers
         private readonly IRabbitMQueue _rabbitMQ;
         private readonly ITokenService _tokenService;
         private readonly JwtSettings _jwtSettings;
+        private readonly ICacheService _cache;
+        private readonly IUserRepository _userRepository;
 
         public UserController(
             IUserService userService,
             IRabbitMQueue rabbitMQueue,
             ITokenService tokenService,
-            IOptions<JwtSettings> jwtOpts)
+            IOptions<JwtSettings> jwtOpts,
+            ICacheService cache,
+            IUserRepository userRepository)
         {
             _userService = userService;
             _rabbitMQ = rabbitMQueue;
             _tokenService = tokenService;
             _jwtSettings = jwtOpts.Value;
+            _cache = cache;
+            _userRepository = userRepository;
         }
 
         [HttpPost("CreateUser")]
@@ -41,7 +49,9 @@ namespace PSK.ApiService.Controllers
 
             try
             {
-                await _userService.CreateUserAsync(dto);
+                var createdUser = await _userService.CreateUserAsync(dto);
+
+                await _cache.SetAsync($"user:id:{createdUser.Id}", createdUser, TimeSpan.FromHours(1));
 
                 _rabbitMQ.PublishMessage(
                     queue: "user.created",
@@ -98,10 +108,21 @@ namespace PSK.ApiService.Controllers
 
         [Authorize]
         [HttpGet("Me")]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            return Ok(new { Email = email });
+            var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (sub == null || !Guid.TryParse(sub, out var id))
+                return Unauthorized();
+
+            var user = await _userRepository.GetByIdAsync<Guid>(id);
+            if (user == null) return NotFound();
+
+            return Ok(new
+            {
+                user.FirstName,
+                user.LastName,
+                user.Email
+            });
         }
     }
 }
