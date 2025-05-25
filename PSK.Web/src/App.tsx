@@ -1,12 +1,12 @@
 import { Route, Routes, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import AppRoutes from "./AppRoutes";
 import Layout from "./Layout";
 
 const ProtectedRoutes = () => {
-    const { token } = useAuth();
+    const token = localStorage.getItem("token");
 
     return token ? (
         <Layout>
