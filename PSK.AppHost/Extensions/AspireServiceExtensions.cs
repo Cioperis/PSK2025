@@ -14,7 +14,7 @@ public static class AspireServiceExtensions
             .WithPgWeb();
 
         var postgresdb = postgres.AddDatabase("postgresdb");
-        
+
         var mongo = builder.AddMongoDB("mongo")
             .WithDataVolume()
             .WithMongoExpress();

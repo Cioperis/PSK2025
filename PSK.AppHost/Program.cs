@@ -8,7 +8,7 @@ try
     Log.Information("Starting PSK AppHost");
 
     var builder = (DistributedApplicationBuilder)DistributedApplication.CreateBuilder(args);
-    
+
 
     builder.AddPskServices();
 

@@ -28,7 +28,7 @@ try
         .AddPskJwtAuthentication(builder.Configuration)
         .AddPskSwagger()
         .AddPskHangfire(builder.Configuration);
-    
+
     builder.AddMongoDBClient("mongodb");
     builder.Services.AddAuditLogging(builder.Configuration);
 
