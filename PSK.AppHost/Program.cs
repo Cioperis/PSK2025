@@ -8,12 +8,7 @@ try
     Log.Information("Starting PSK AppHost");
 
     var builder = (DistributedApplicationBuilder)DistributedApplication.CreateBuilder(args);
-
-    var mongo = builder.AddMongoDB("mongo")
-        .WithDataVolume()
-        .WithMongoExpress();
-
-    var mongodb = mongo.AddDatabase("mongodb");
+    
 
     builder.AddPskServices();
 
