@@ -4,12 +4,13 @@ import {useState} from "react";
 import {useParams} from "react-router-dom";
 
 interface EditDiscussionModalProps {
+    userId: string;
     isOpen: boolean;
     setOpen: (p: boolean) => void;
     setDiscussion: (p: Discussion) => void;
 }
 
-const EditDiscussionModal = ({ isOpen, setOpen, setDiscussion }: EditDiscussionModalProps) => {
+const EditDiscussionModal = ({ isOpen, setOpen, setDiscussion, userId }: EditDiscussionModalProps) => {
     const {id} = useParams<{ id: string }>();
     const [discussionName, setDiscussionName] = useState<string>("");
 
@@ -27,7 +28,8 @@ const EditDiscussionModal = ({ isOpen, setOpen, setDiscussion }: EditDiscussionM
         const newDiscussion: Discussion = {
             id: id,
             name: discussionName,
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            userId: userId,
         }
 
         updateDiscussion(newDiscussion)

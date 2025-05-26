@@ -2,7 +2,7 @@
 
 namespace PSK.ServiceDefaults.Models
 {
-    public class User : BaseClass
+    public class User : BaseClass  
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }

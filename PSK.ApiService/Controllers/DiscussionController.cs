@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
@@ -20,6 +22,7 @@ public class DiscussionController : ControllerBase
         _discussionService = discussionService;
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(typeof(DiscussionDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -31,10 +34,15 @@ public class DiscussionController : ControllerBase
             Log.Warning("Invalid model state for CreateDiscussion request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
+        
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized("Invalid user credentials");
 
         try
         {
-            DiscussionDTO newDiscussionDto = await _discussionService.CreateDiscussionAsync(discussion);
+            DiscussionDTO newDiscussionDto = await _discussionService.CreateDiscussionAsync(discussion, userId);
             Log.Information("Discussion created successfully. Discussion data: {@Discussion}", newDiscussionDto);
             return Ok(newDiscussionDto);
         }
@@ -45,6 +53,7 @@ public class DiscussionController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut]
     [ProducesResponseType(typeof(DiscussionDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,10 +65,15 @@ public class DiscussionController : ControllerBase
             Log.Warning("Invalid model state for UpdateDiscussion request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
+        
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized("Invalid user credentials");
 
         try
         {
-            DiscussionDTO updatedDiscussion = await _discussionService.UpdateDiscussionAsync(discussion);
+            DiscussionDTO updatedDiscussion = await _discussionService.UpdateDiscussionAsync(discussion, userId);
             Log.Information("Discussion updated successfully. Discussion ID: {DiscussionId}, Data: {@Discussion}", discussion.Id, updatedDiscussion);
             return Ok(updatedDiscussion);
         }
@@ -114,6 +128,7 @@ public class DiscussionController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -122,7 +137,12 @@ public class DiscussionController : ControllerBase
     {
         try
         {
-            bool isDeleted = await _discussionService.DeleteDiscussionAsync(id);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized("Invalid user credentials");
+            
+            bool isDeleted = await _discussionService.DeleteDiscussionAsync(id, userId);
 
             if (!isDeleted)
             {

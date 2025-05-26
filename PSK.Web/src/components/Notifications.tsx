@@ -92,9 +92,8 @@ const Notifications = () => {
             isRecurring: true
         }
 
-        scheduleCustomMessage(newCustomMessage).then((umr) => {
-            alert("New reminder created successfully.");
-            setUserMessages([...userMessages, umr])
+        scheduleCustomMessage(newCustomMessage).then((userMessage) => {
+            setUserMessages([...userMessages, userMessage.result])
         }).catch(console.error);
 
         toggleIsCreateModalOpen();
@@ -102,6 +101,7 @@ const Notifications = () => {
         setNewUserMessageTime("");
         setNewUserMessageDate(undefined);
     }
+    console.log(userMessages);
 
     return (
         <>

@@ -39,8 +39,8 @@ export const scheduleMessage = async (scheduleMessageRequest: ScheduleMessageReq
     return response.data;
 }
 
-export const scheduleCustomMessage = async (userMessageRequest: UserMessageRequest): Promise<UserMessage> => {
-    const response = await axiosInstance.post<UserMessage>('/AutoMessage/schedule-custom-message', userMessageRequest);
+export const scheduleCustomMessage = async (userMessageRequest: UserMessageRequest) => {
+    const response = await axiosInstance.post('/AutoMessage/schedule-custom-message', userMessageRequest);
     return response.data;
 }
 

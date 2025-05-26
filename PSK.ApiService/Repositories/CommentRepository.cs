@@ -11,6 +11,9 @@ public class CommentRepository : BaseRepository<Comment>, ICommentRepository
 
     public async Task<IEnumerable<Comment>> GetAllCommentsByDiscussionIdAsync(Guid discussionId)
     {
-        return await _context.Comments.Where(comment => comment.DiscussionId == discussionId).ToListAsync();
+        return await _context.Comments
+            .Where(comment => comment.DiscussionId == discussionId)
+            .Include(comment => comment.User) 
+            .ToListAsync();
     }
 }

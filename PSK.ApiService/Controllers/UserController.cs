@@ -113,15 +113,16 @@ namespace PSK.ApiService.Controllers
             var sub = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (sub == null || !Guid.TryParse(sub, out var id))
                 return Unauthorized();
-
+            
             var user = await _userRepository.GetByIdAsync<Guid>(id);
             if (user == null) return NotFound();
-
+            
             return Ok(new
             {
                 user.FirstName,
                 user.LastName,
-                user.Email
+                user.Email,
+                id
             });
         }
     }

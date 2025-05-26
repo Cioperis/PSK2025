@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
@@ -19,6 +20,7 @@ public class CommentController : ControllerBase
         _commentService = commentService;
     }
 
+    [Authorize]
     [HttpPost]
     [ProducesResponseType(typeof(CommentDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -30,10 +32,15 @@ public class CommentController : ControllerBase
             Log.Warning("Invalid model state for CreateComment request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
+        
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized("Invalid user credentials");
 
         try
         {
-            CommentDTO newCommentDto = await _commentService.CreateCommentAsync(comment);
+            CommentDTO newCommentDto = await _commentService.CreateCommentAsync(comment, userId);
             Log.Information("Comment created successfully. Comment: {@CreateCommentSchema}", comment);
             return Ok(newCommentDto);
         }
@@ -44,6 +51,7 @@ public class CommentController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut]
     [ProducesResponseType(typeof(CommentDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -55,10 +63,15 @@ public class CommentController : ControllerBase
             Log.Warning("Invalid model state for UpdateComment request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
+        
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized("Invalid user credentials");
 
         try
         {
-            CommentDTO updatedComment = await _commentService.UpdateCommentAsync(comment);
+            CommentDTO updatedComment = await _commentService.UpdateCommentAsync(comment, userId);
             Log.Information("Comment updated successfully. Comment ID: {CommentId}, Data: {@CommentDTO}", comment.Id, comment);
             return Ok(updatedComment);
         }
@@ -132,6 +145,7 @@ public class CommentController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -140,7 +154,12 @@ public class CommentController : ControllerBase
     {
         try
         {
-            bool isDeleted = await _commentService.DeleteCommentAsync(id);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized("Invalid user credentials");
+            
+            bool isDeleted = await _commentService.DeleteCommentAsync(id, userId);
 
             if (!isDeleted)
             {
