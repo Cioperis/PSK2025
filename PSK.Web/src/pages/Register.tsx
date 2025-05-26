@@ -40,8 +40,7 @@ export const RegisterPage = () => {
                 <h2>WellBeing</h2>
             </div>
             <h3>Register</h3>
-            <Input className="mb-2" placeholder="First name" value={firstName} onChange={e => setFirst(e.target.value)} />
-            <Input className="mb-2" placeholder="Last name" value={lastName} onChange={e => setLast(e.target.value)} />
+            <Input className="mb-2" placeholder="Username" onChange={e => (setFirst(e.target.value), setLast(e.target.value))} />
             <Input className="mb-2" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
             <Input className="mb-2" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
             <Button color="success" onClick={handleRegister} block>Register</Button>
