@@ -22,36 +22,6 @@ namespace PSK.MigrationService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PSK.ServiceDefaults.Models.AutoMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AutoMessages");
-                });
-
             modelBuilder.Entity("PSK.ServiceDefaults.Models.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -111,6 +81,36 @@ namespace PSK.MigrationService.Migrations
                     b.ToTable("Discussions");
                 });
 
+            modelBuilder.Entity("PSK.ServiceDefaults.Models.PositiveMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PositiveMessage");
+                });
+
             modelBuilder.Entity("PSK.ServiceDefaults.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -159,6 +159,47 @@ namespace PSK.MigrationService.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("UserMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRecurring")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("SendAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserMessage");
+                });
+
             modelBuilder.Entity("PSK.ServiceDefaults.Models.Comment", b =>
                 {
                     b.HasOne("PSK.ServiceDefaults.Models.Discussion", "Discussion")
@@ -170,9 +211,25 @@ namespace PSK.MigrationService.Migrations
                     b.Navigation("Discussion");
                 });
 
+            modelBuilder.Entity("UserMessage", b =>
+                {
+                    b.HasOne("PSK.ServiceDefaults.Models.User", "User")
+                        .WithMany("UserMessages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PSK.ServiceDefaults.Models.Discussion", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("PSK.ServiceDefaults.Models.User", b =>
+                {
+                    b.Navigation("UserMessages");
                 });
 #pragma warning restore 612, 618
         }

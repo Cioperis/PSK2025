@@ -1,4 +1,6 @@
-﻿namespace PSK.ServiceDefaults.Models
+﻿using PSK.ServiceDefaults.Models.Enums;
+
+namespace PSK.ServiceDefaults.Models
 {
     public class User : BaseClass
     {
@@ -9,5 +11,6 @@
         public required bool IsActive { get; set; }
         public DateTime LastLogin { get; set; }
         public UserRole Role { get; set; } = UserRole.User;
+        public ICollection<UserMessage> UserMessages { get; set; } = [];
     }
 }
