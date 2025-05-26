@@ -32,9 +32,9 @@ public class CommentController : ControllerBase
             Log.Warning("Invalid model state for CreateComment request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
-        
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized("Invalid user credentials");
 
@@ -63,9 +63,9 @@ public class CommentController : ControllerBase
             Log.Warning("Invalid model state for UpdateComment request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
-        
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized("Invalid user credentials");
 
@@ -155,10 +155,10 @@ public class CommentController : ControllerBase
         try
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid user credentials");
-            
+
             bool isDeleted = await _commentService.DeleteCommentAsync(id, userId);
 
             if (!isDeleted)

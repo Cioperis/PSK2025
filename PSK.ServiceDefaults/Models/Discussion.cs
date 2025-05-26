@@ -8,7 +8,7 @@ public class Discussion : BaseClass
     public required string Name { get; set; }
 
     public ICollection<Comment>? Comments { get; set; }
-    
+
     [ForeignKey("UserId")]
     public User User { get; set; }
     [Required]

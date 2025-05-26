@@ -34,9 +34,9 @@ public class DiscussionController : ControllerBase
             Log.Warning("Invalid model state for CreateDiscussion request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
-        
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized("Invalid user credentials");
 
@@ -65,9 +65,9 @@ public class DiscussionController : ControllerBase
             Log.Warning("Invalid model state for UpdateDiscussion request: {@ModelState}", ModelState);
             return BadRequest(ModelState);
         }
-        
+
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized("Invalid user credentials");
 
@@ -138,10 +138,10 @@ public class DiscussionController : ControllerBase
         try
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
                 return Unauthorized("Invalid user credentials");
-            
+
             bool isDeleted = await _discussionService.DeleteDiscussionAsync(id, userId);
 
             if (!isDeleted)

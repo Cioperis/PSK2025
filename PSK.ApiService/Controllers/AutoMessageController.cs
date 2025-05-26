@@ -27,10 +27,10 @@ namespace PSK.ApiService.Controllers
         public async Task<IActionResult> SendRandomPositiveMessage()
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-    
+
             if (string.IsNullOrEmpty(userEmail))
                 return BadRequest("User email not found in claims");
-            
+
             var result = await _service.EnqueueRandomPositiveMessageAsync(userEmail);
             if (!result)
                 return NotFound("No active positive messages found.");
@@ -45,10 +45,10 @@ namespace PSK.ApiService.Controllers
         public IActionResult ScheduleMessages([FromBody] ScheduleMessageRequest request)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-            
+
             if (request.Days < 1 || request.Days > 30)
                 return BadRequest("Invalid request.");
-    
+
             if (string.IsNullOrEmpty(userEmail))
                 return BadRequest("User email not found in claims");
 
@@ -90,7 +90,7 @@ namespace PSK.ApiService.Controllers
 
             return Ok(messageDto);
         }
-        
+
         [Authorize]
         [HttpGet("GetAllMessages")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -102,10 +102,10 @@ namespace PSK.ApiService.Controllers
                 return Unauthorized("Invalid or missing user identity.");
 
             var customMessages = await _service.GetUsersCustomMessages(userId);
-            
+
             return Ok(customMessages);
         }
-        
+
         [Authorize]
         [HttpDelete("{messageId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -115,12 +115,12 @@ namespace PSK.ApiService.Controllers
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
                 return Unauthorized("Invalid or missing user identity.");
-            
+
             bool isDeleted = await _service.DeleteUserMessage(messageId, userId);
 
             if (!isDeleted)
                 return Unauthorized("Message doesn't exist or permission denied");
-            
+
             return Ok();
         }
 

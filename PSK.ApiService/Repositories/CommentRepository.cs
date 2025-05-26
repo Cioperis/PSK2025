@@ -13,7 +13,7 @@ public class CommentRepository : BaseRepository<Comment>, ICommentRepository
     {
         return await _context.Comments
             .Where(comment => comment.DiscussionId == discussionId)
-            .Include(comment => comment.User) 
+            .Include(comment => comment.User)
             .ToListAsync();
     }
 }

@@ -13,14 +13,14 @@ public class CommentService : ICommentService
     private readonly IUserRepository _userRepository;
 
     public CommentService(
-        ICommentRepository commentRepository, 
-        IDiscussionRepository discussionRepository, 
+        ICommentRepository commentRepository,
+        IDiscussionRepository discussionRepository,
         IUserRepository userRepository)
     {
         _commentRepository = commentRepository;
         _discussionRepository = discussionRepository;
         _userRepository = userRepository;
-        
+
     }
 
     public async Task<CommentDTO> CreateCommentAsync(CreateCommentSchema comment, Guid userId)
@@ -28,7 +28,7 @@ public class CommentService : ICommentService
         Discussion? discussion = await _discussionRepository.GetByIdAsync(comment.DiscussionId);
         if (discussion == null)
             throw new Exception($"Comment's parent Discussion {comment.DiscussionId} not found");
-        
+
         var user = _userRepository.GetById(userId);
 
         Comment newComment = new Comment
@@ -56,10 +56,10 @@ public class CommentService : ICommentService
         Comment? commentToUpdate = await _commentRepository.GetByIdAsync(comment.Id);
         if (commentToUpdate == null)
             throw new Exception($"Comment {comment.Id} not found");
-        
+
         if (commentToUpdate.UserId != userId)
             throw new Exception($"Unauthorized");
-        
+
         var user = _userRepository.GetById(userId);
 
         commentToUpdate.Content = comment.Content;
@@ -131,10 +131,10 @@ public class CommentService : ICommentService
 
         if (comment == null)
             return false;
-        
+
         if (comment.UserId != userId)
             throw new Exception($"Unauthorized");
-        
+
         _commentRepository.Remove(comment);
         await _commentRepository.SaveChangesAsync();
 

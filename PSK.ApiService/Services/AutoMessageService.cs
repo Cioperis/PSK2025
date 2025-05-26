@@ -118,7 +118,7 @@ namespace PSK.ApiService.Services
         public async Task<IEnumerable<UserMessageDto>> GetUsersCustomMessages(Guid userId)
         {
             var userMessages = await _userMessageRepo.GetWhereAsync(u => u.UserId == userId);
-            
+
             return userMessages.Select(userMessage => new UserMessageDto
             {
                 Id = userMessage.Id,
@@ -150,15 +150,15 @@ namespace PSK.ApiService.Services
         public async Task<bool> DeleteUserMessage(Guid messageId, Guid userId)
         {
             var userMessage = await _userMessageRepo.GetByIdAsync(messageId);
-            
+
             if (userMessage == null || userMessage.UserId != userId)
                 return false;
-            
+
             _userMessageRepo.Remove(userMessage);
             await _userMessageRepo.SaveChangesAsync();
-            
+
             return true;
         }
-        
+
     }
 }

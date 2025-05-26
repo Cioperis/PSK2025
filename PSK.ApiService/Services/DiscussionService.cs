@@ -39,7 +39,7 @@ public class DiscussionService : IDiscussionService
         Discussion? discussionToUpdate = await _discussionRepository.GetByIdAsync(discussion.Id);
         if (discussionToUpdate == null)
             throw new Exception($"Discussion {discussion.Id} not found");
-        
+
         if (discussionToUpdate.UserId != userId)
             throw new Exception($"Unauthorized");
 
@@ -94,7 +94,7 @@ public class DiscussionService : IDiscussionService
 
         if (discussion == null)
             return false;
-        
+
         if (discussion.UserId != userId)
             throw new Exception($"Unauthorized");
 
