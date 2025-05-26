@@ -115,5 +115,50 @@ namespace PSK.ApiService.Services
             }
         }
 
+        public async Task<IEnumerable<UserMessageDto>> GetUsersCustomMessages(Guid userId)
+        {
+            var userMessages = await _userMessageRepo.GetWhereAsync(u => u.UserId == userId);
+
+            return userMessages.Select(userMessage => new UserMessageDto
+            {
+                Id = userMessage.Id,
+                UserId = userMessage.UserId,
+                Content = userMessage.Content,
+                SendAt = userMessage.SendAt,
+                IsRecurring = userMessage.IsRecurring,
+                IsEnabled = userMessage.IsEnabled,
+            });
+        }
+
+        public async Task<UserMessageDto?> GetCustomMessage(Guid messageId)
+        {
+            var userMessage = await _userMessageRepo.GetByIdAsync(messageId);
+            if (userMessage == null)
+                return null;
+
+            return new UserMessageDto
+            {
+                Id = userMessage.Id,
+                UserId = userMessage.UserId,
+                Content = userMessage.Content,
+                SendAt = userMessage.SendAt,
+                IsRecurring = userMessage.IsRecurring,
+                IsEnabled = userMessage.IsEnabled
+            };
+        }
+
+        public async Task<bool> DeleteUserMessage(Guid messageId, Guid userId)
+        {
+            var userMessage = await _userMessageRepo.GetByIdAsync(messageId);
+
+            if (userMessage == null || userMessage.UserId != userId)
+                return false;
+
+            _userMessageRepo.Remove(userMessage);
+            await _userMessageRepo.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

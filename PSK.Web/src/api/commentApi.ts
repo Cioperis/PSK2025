@@ -6,6 +6,7 @@ export interface Comment {
     content: string;
     discussionId: string;
     updatedAt: Date;
+    username: string;
 }
 
 export interface CommentSchema {

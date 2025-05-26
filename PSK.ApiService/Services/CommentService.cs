@@ -10,24 +10,33 @@ public class CommentService : ICommentService
 {
     private readonly ICommentRepository _commentRepository;
     private readonly IDiscussionRepository _discussionRepository;
+    private readonly IUserRepository _userRepository;
 
-    public CommentService(ICommentRepository commentRepository, IDiscussionRepository discussionRepository)
+    public CommentService(
+        ICommentRepository commentRepository,
+        IDiscussionRepository discussionRepository,
+        IUserRepository userRepository)
     {
         _commentRepository = commentRepository;
         _discussionRepository = discussionRepository;
+        _userRepository = userRepository;
+
     }
 
-    public async Task<CommentDTO> CreateCommentAsync(CreateCommentSchema comment)
+    public async Task<CommentDTO> CreateCommentAsync(CreateCommentSchema comment, Guid userId)
     {
         Discussion? discussion = await _discussionRepository.GetByIdAsync(comment.DiscussionId);
         if (discussion == null)
             throw new Exception($"Comment's parent Discussion {comment.DiscussionId} not found");
 
+        var user = _userRepository.GetById(userId);
+
         Comment newComment = new Comment
         {
             Content = comment.Content,
             DiscussionId = comment.DiscussionId,
-            Discussion = discussion
+            Discussion = discussion,
+            UserId = userId,
         };
 
         await _commentRepository.AddAsync(newComment);
@@ -37,18 +46,25 @@ public class CommentService : ICommentService
             Id = newComment.Id,
             Content = newComment.Content,
             DiscussionId = newComment.DiscussionId,
-            UpdatedAt = newComment.UpdatedAt
+            UpdatedAt = newComment.UpdatedAt,
+            Username = user.FirstName
         };
     }
 
-    public async Task<CommentDTO> UpdateCommentAsync(CommentDTO comment)
+    public async Task<CommentDTO> UpdateCommentAsync(CommentDTO comment, Guid userId)
     {
         Comment? commentToUpdate = await _commentRepository.GetByIdAsync(comment.Id);
         if (commentToUpdate == null)
             throw new Exception($"Comment {comment.Id} not found");
 
+        if (commentToUpdate.UserId != userId)
+            throw new Exception($"Unauthorized");
+
+        var user = _userRepository.GetById(userId);
+
         commentToUpdate.Content = comment.Content;
         commentToUpdate.DiscussionId = comment.DiscussionId;
+        commentToUpdate.Version++;
 
         _commentRepository.Update(commentToUpdate);
         await _commentRepository.SaveChangesAsync();
@@ -58,7 +74,8 @@ public class CommentService : ICommentService
             Id = commentToUpdate.Id,
             Content = commentToUpdate.Content,
             DiscussionId = commentToUpdate.DiscussionId,
-            UpdatedAt = commentToUpdate.UpdatedAt
+            UpdatedAt = commentToUpdate.UpdatedAt,
+            Username = user.FirstName
         };
 
         return updatedCommentDto;
@@ -76,7 +93,8 @@ public class CommentService : ICommentService
             Id = comment.Id,
             Content = comment.Content,
             DiscussionId = comment.DiscussionId,
-            UpdatedAt = comment.UpdatedAt
+            UpdatedAt = comment.UpdatedAt,
+            Username = comment.User.FirstName
         };
     }
 
@@ -89,7 +107,8 @@ public class CommentService : ICommentService
             Id = comment.Id,
             Content = comment.Content,
             DiscussionId = comment.DiscussionId,
-            UpdatedAt = comment.UpdatedAt
+            UpdatedAt = comment.UpdatedAt,
+            Username = comment.User.FirstName
         });
     }
 
@@ -102,16 +121,20 @@ public class CommentService : ICommentService
             Id = comment.Id,
             Content = comment.Content,
             DiscussionId = comment.DiscussionId,
-            UpdatedAt = comment.UpdatedAt
+            UpdatedAt = comment.UpdatedAt,
+            Username = comment.User.FirstName
         });
     }
 
-    public async Task<bool> DeleteCommentAsync(Guid commentId)
+    public async Task<bool> DeleteCommentAsync(Guid commentId, Guid userId)
     {
         Comment? comment = await _commentRepository.GetByIdAsync(commentId);
 
         if (comment == null)
             return false;
+
+        if (comment.UserId != userId)
+            throw new Exception($"Unauthorized");
 
         _commentRepository.Remove(comment);
         await _commentRepository.SaveChangesAsync();

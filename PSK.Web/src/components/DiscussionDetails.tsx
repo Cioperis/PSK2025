@@ -1,10 +1,12 @@
 ﻿import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {Discussion, getDiscussionById} from "../api/discussionApi.ts";
+import {useNavigate, useParams} from "react-router-dom";
+import {deleteDiscussion, Discussion, getDiscussionById} from "../api/discussionApi.ts";
 import {Button, Card, CardBody, CardText, CardTitle, Input, InputGroup} from "reactstrap";
 import {getAllCommentsByDiscussionId, Comment, createComment, CommentSchema} from "../api/commentApi.ts";
 import {formatDistanceToNow} from "date-fns";
 import EditDiscussionModal from "./EditDiscussionModal.tsx";
+import {ToastContainer} from "react-toastify";
+import axiosInstance from "../api/axiosInstance.ts";
 
 const DiscussionDetails = () => {
     const {id} = useParams<{ id: string }>();
@@ -12,11 +14,17 @@ const DiscussionDetails = () => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newCommentContent, setNewCommentContent] = useState<string>('');
     const [isEditDiscussionModalOpen, setIsEditDiscussionModalOpen] = useState<boolean>(false);
+    const [userId, setUserId] = useState<string>("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (id){
             getDiscussionById(id).then(setDiscussion);
             getAllCommentsByDiscussionId(id).then(setComments);
+
+            axiosInstance.get("/User/Me")
+                .then(res => setUserId(res.data.id));
         }
     }, [id])
 
@@ -34,6 +42,13 @@ const DiscussionDetails = () => {
         });
     }
 
+    const handleDeleteDiscussionClick = () => {
+        if (!id)
+            return;
+
+        deleteDiscussion(id).then(() => navigate("/"))
+    }
+
     const handleEditDiscussionClick = () => {
         setIsEditDiscussionModalOpen(true);
     }
@@ -42,16 +57,23 @@ const DiscussionDetails = () => {
         <>
             <div className="d-flex justify-content-between align-items-center my-3">
                 <h1>{discussion?.name}</h1>
-                <Button onClick={handleEditDiscussionClick}>
-                    Edit
-                </Button>
+                {userId === discussion?.userId && (
+                    <div>
+                        <Button onClick={handleEditDiscussionClick}>
+                            Edit
+                        </Button>
+                        <Button color="danger" className="mx-2" onClick={handleDeleteDiscussionClick}>
+                            Delete
+                        </Button>
+                    </div>
+                )}
             </div>
             {comments?.map((comment: Comment) => (
                 <Card key={comment.id}
                       className="shadow-sm"
                 >
                     <CardBody>
-                        <CardTitle><strong>Username</strong></CardTitle>
+                        <CardTitle><strong>{comment.username}</strong></CardTitle>
                         <CardText className="d-flex justify-content-between align-items-center">
                             {comment.content}
                             <small>
@@ -74,7 +96,10 @@ const DiscussionDetails = () => {
             <EditDiscussionModal isOpen={isEditDiscussionModalOpen}
                                  setOpen={setIsEditDiscussionModalOpen}
                                  setDiscussion={setDiscussion}
+                                 userId={userId}
             />
+
+            <ToastContainer/>
         </>
     );
 }

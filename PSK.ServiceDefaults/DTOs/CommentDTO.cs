@@ -10,5 +10,5 @@ public class CommentDTO
     [Required(ErrorMessage = "DiscussionId is required")]
     public Guid DiscussionId { get; set; }
     public DateTime UpdatedAt { get; set; }
-
+    public required string Username { get; set; }
 }

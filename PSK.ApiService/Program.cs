@@ -1,8 +1,10 @@
 using Serilog;
 using PSK.ApiService.Extensions;
 using Hangfire;
+using PSK.ApiService.AuditLogging;
 using PSK.ApiService.Chatting;
 using PSK.ApiService.Data;
+using PSK.ApiService.Middleware;
 using Serilog.Events;
 
 string basePath = AppContext.BaseDirectory;
@@ -27,13 +29,17 @@ try
         .AddPskSwagger()
         .AddPskHangfire(builder.Configuration);
 
+    builder.AddMongoDBClient("mongodb");
+    builder.Services.AddAuditLogging(builder.Configuration);
+
+
     builder.Services.AddControllers();
     builder.Services.AddSignalR();
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowLocalhost5173", policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
@@ -58,6 +64,9 @@ try
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
+
+    app.UseMiddleware<ExecutionLogMiddleware>();
+
     app.MapControllers();
 
     app.Run();

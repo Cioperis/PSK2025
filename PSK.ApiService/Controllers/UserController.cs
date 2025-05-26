@@ -121,7 +121,8 @@ namespace PSK.ApiService.Controllers
             {
                 user.FirstName,
                 user.LastName,
-                user.Email
+                user.Email,
+                id
             });
         }
     }

@@ -15,11 +15,12 @@ public class DiscussionService : IDiscussionService
         _discussionRepository = discussionRepository;
     }
 
-    public async Task<DiscussionDTO> CreateDiscussionAsync(CreateDiscussionSchema discussion)
+    public async Task<DiscussionDTO> CreateDiscussionAsync(CreateDiscussionSchema discussion, Guid userId)
     {
         Discussion newDiscussion = new Discussion
         {
-            Name = discussion.Name
+            Name = discussion.Name,
+            UserId = userId
         };
 
         await _discussionRepository.AddAsync(newDiscussion);
@@ -28,17 +29,22 @@ public class DiscussionService : IDiscussionService
         {
             Id = newDiscussion.Id,
             Name = newDiscussion.Name,
-            UpdatedAt = newDiscussion.UpdatedAt
+            UpdatedAt = newDiscussion.UpdatedAt,
+            UserId = userId
         };
     }
 
-    public async Task<DiscussionDTO> UpdateDiscussionAsync(DiscussionDTO discussion)
+    public async Task<DiscussionDTO> UpdateDiscussionAsync(DiscussionDTO discussion, Guid userId)
     {
         Discussion? discussionToUpdate = await _discussionRepository.GetByIdAsync(discussion.Id);
         if (discussionToUpdate == null)
             throw new Exception($"Discussion {discussion.Id} not found");
 
+        if (discussionToUpdate.UserId != userId)
+            throw new Exception($"Unauthorized");
+
         discussionToUpdate.Name = discussion.Name;
+        discussionToUpdate.Version++;
 
         _discussionRepository.Update(discussionToUpdate);
         await _discussionRepository.SaveChangesAsync();
@@ -47,7 +53,8 @@ public class DiscussionService : IDiscussionService
         {
             Id = discussion.Id,
             Name = discussion.Name,
-            UpdatedAt = discussion.UpdatedAt
+            UpdatedAt = discussion.UpdatedAt,
+            UserId = userId
         };
 
         return updatedDiscussionDto;
@@ -61,7 +68,8 @@ public class DiscussionService : IDiscussionService
         {
             Id = discussion.Id,
             Name = discussion.Name,
-            UpdatedAt = discussion.UpdatedAt
+            UpdatedAt = discussion.UpdatedAt,
+            UserId = discussion.UserId
         });
     }
 
@@ -76,16 +84,20 @@ public class DiscussionService : IDiscussionService
         {
             Id = discussion.Id,
             Name = discussion.Name,
-            UpdatedAt = discussion.UpdatedAt
+            UpdatedAt = discussion.UpdatedAt,
+            UserId = discussion.UserId
         };
     }
 
-    public async Task<bool> DeleteDiscussionAsync(Guid discussionId)
+    public async Task<bool> DeleteDiscussionAsync(Guid discussionId, Guid userId)
     {
         Discussion? discussion = await _discussionRepository.GetByIdAsync(discussionId);
 
         if (discussion == null)
             return false;
+
+        if (discussion.UserId != userId)
+            throw new Exception($"Unauthorized");
 
         _discussionRepository.Remove(discussion);
         await _discussionRepository.SaveChangesAsync();

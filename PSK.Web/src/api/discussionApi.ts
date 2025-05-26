@@ -5,6 +5,7 @@ export interface Discussion {
     id: string;
     name: string;
     updatedAt: Date;
+    userId: string;
 }
 
 export interface DiscussionSchema {
