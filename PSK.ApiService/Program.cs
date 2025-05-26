@@ -33,7 +33,7 @@ try
     {
         options.AddPolicy("AllowLocalhost5173", policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

@@ -39,8 +39,8 @@ const NavMenu = () => {
                         <NavLink tag={Link} to="/chat" className="text-dark align-items-center">
                             <div>Chat</div>
                         </NavLink>
-                        <NavLink tag={Link} to="https://www.youtube.com/watch?v=FjAaEiQfUZo" className="text-dark align-items-center">
-                            <div>Sick Beats</div>
+                        <NavLink tag={Link} to="/notifications" className="text-dark align-items-center">
+                            <div>Notifications</div>
                         </NavLink>
                     </Nav>
                     <Nav navbar className="ms-auto">
