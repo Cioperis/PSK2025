@@ -1,4 +1,4 @@
-﻿namespace PSK.ServiceDefaults.Models
+﻿namespace PSK.ServiceDefaults.Models.Enums
 {
     public enum UserRole
     {

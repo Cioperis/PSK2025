@@ -1,50 +1,43 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PSK.ApiService.Data;
+﻿using PSK.ApiService.Data;
 using PSK.ApiService.Repositories.Interfaces;
+using PSK.ApiService.Repositories;
 using PSK.ServiceDefaults.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace PSK.ApiService.Repositories
+public class AutoMessageRepository : BaseRepository<PositiveMessage>, IAutoMessageRepository
 {
-    public class AutoMessageRepository : BaseRepository<AutoMessage>, IAutoMessageRepository
+    public AutoMessageRepository(AppDbContext context) : base(context) { }
+
+    public async Task<PositiveMessage?> GetRandomActiveMessageAsync()
     {
-        public AutoMessageRepository(AppDbContext context) : base(context) { }
+        return await _context.PositiveMessage
+            .Where(m => m.IsEnabled)
+            .OrderBy(m => Guid.NewGuid())
+            .FirstOrDefaultAsync();
+    }
 
-        public async Task<AutoMessage?> GetRandomActiveMessageAsync()
-        {
-            var activeMessages = await _context.AutoMessages
-                .Where(m => m.IsActive)
-                .ToListAsync();
+    public async Task<IEnumerable<PositiveMessage>> SearchByKeywordAsync(string keyword)
+    {
+        return await _context.PositiveMessage
+            .Where(m => m.Content.Contains(keyword))
+            .ToListAsync();
+    }
 
-            if (!activeMessages.Any())
-                return null;
+    public async Task<int> CountActiveAsync()
+    {
+        return await _context.PositiveMessage.CountAsync(m => m.IsEnabled);
+    }
 
-            var random = new Random();
-            return activeMessages[random.Next(activeMessages.Count)];
-        }
+    public async Task<int> CountInactiveAsync()
+    {
+        return await _context.PositiveMessage.CountAsync(m => !m.IsEnabled);
+    }
 
-        public async Task<IEnumerable<AutoMessage>> SearchByKeywordAsync(string keyword)
-        {
-            return await _context.AutoMessages
-                .Where(m => m.Content.Contains(keyword))
-                .ToListAsync();
-        }
-
-        public async Task<int> CountActiveAsync()
-        {
-            return await _context.AutoMessages.CountAsync(m => m.IsActive);
-        }
-
-        public async Task<int> CountInactiveAsync()
-        {
-            return await _context.AutoMessages.CountAsync(m => !m.IsActive);
-        }
-
-        public async Task<IEnumerable<AutoMessage>> GetRecentAsync(int count = 10)
-        {
-            return await _context.AutoMessages
-                .OrderByDescending(m => m.CreatedAt)
-                .Take(count)
-                .ToListAsync();
-        }
+    public async Task<IEnumerable<PositiveMessage>> GetRecentAsync(int count = 10)
+    {
+        return await _context.PositiveMessage
+            .OrderByDescending(m => m.CreatedAt)
+            .Take(count)
+            .ToListAsync();
     }
 }

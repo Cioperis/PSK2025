@@ -27,6 +27,7 @@ try
 
     builder.Services.AddSingleton<NotificationService>();
     builder.Services.AddHostedService<UserCreatedConsumer>();
+    builder.Services.AddHostedService<AutoMessageConsumer>();
 
     var app = builder.Build();
 

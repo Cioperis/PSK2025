@@ -11,6 +11,10 @@
     <PackageReference Include="Aspire.MongoDB.Driver" Version="9.3.0" />
     <PackageReference Include="Aspire.Npgsql" Version="9.2.1" />
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.2.1" />
+    <PackageReference Include="Hangfire" Version="1.8.20" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.20" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.12" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.20" />
     <PackageReference Include="Aspire.StackExchange.Redis" Version="9.2.1" />
     <PackageReference Include="KubernetesClient" Version="16.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
@@ -32,9 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Services\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

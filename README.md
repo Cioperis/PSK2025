@@ -10,6 +10,10 @@
 - React Vite (Frontend Framework)
 - Serilog (Structured Logging)
 - PostgreSQL (Database)
+- MongoDB (NoSQL/ for audit)
+- Hangfire (Background and scheduled job processing)
+- JWT Authentication (User authentication & authorization)
+- Redis (Distributed cache and Hangfire job storage option)
 - Entity Framework Core (ORM)
 - CI + Vulnerability check
 - RabbitMQ (Message broker for asynchronous communication and task queuing)

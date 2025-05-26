@@ -24,8 +24,14 @@ namespace PSK.AutoMessageService.Messaging
 
     public class UserCreatedMessage
     {
-        public string email { get; set; }
-        public string name { get; set; }
+#pragma warning disable IDE1006 // Naming Styles
+        public required string email { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
+        public required string name { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
         public DateTime timestamp { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }
