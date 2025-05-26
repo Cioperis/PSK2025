@@ -10,17 +10,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
     const navigate = useNavigate();
 
-    const login = (t: string, _e: number) => {
+    const login = (t: string, expiresAt: number) => {
         setToken(t);
         localStorage.setItem("token", t);
+        localStorage.setItem("expires", expiresAt.toString());
         navigate('/');
     };
 
     const logout = () => {
         setToken(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("expires");
         navigate('/login');
     };
 

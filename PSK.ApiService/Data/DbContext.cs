@@ -17,5 +17,12 @@ namespace PSK.ApiService.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<PositiveMessage> PositiveMessage { get; set; }
         public DbSet<UserMessage> UserMessage { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Discussion>()
+                .Property(e => e.Version)
+                .IsConcurrencyToken();
+        }
     }
 }

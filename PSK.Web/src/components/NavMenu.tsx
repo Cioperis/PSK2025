@@ -65,7 +65,7 @@ const NavMenu = () => {
                             </DropdownToggle>
                             <DropdownMenu end>
                                 {user && <>
-                                    <DropdownItem header>{user.firstName} {user.lastName}</DropdownItem>
+                                    <DropdownItem header>{user.firstName}</DropdownItem>
                                     <DropdownItem disabled>{user.email}</DropdownItem>
                                     <DropdownItem divider />
                                 </>}

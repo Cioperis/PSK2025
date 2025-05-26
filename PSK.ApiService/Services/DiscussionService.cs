@@ -44,6 +44,7 @@ public class DiscussionService : IDiscussionService
             throw new Exception($"Unauthorized");
 
         discussionToUpdate.Name = discussion.Name;
+        discussionToUpdate.Version++;
 
         _discussionRepository.Update(discussionToUpdate);
         await _discussionRepository.SaveChangesAsync();

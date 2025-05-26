@@ -24,4 +24,13 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20250525094552_RowVersionMigration.cs" />
+    <Compile Remove="Migrations\20250525094552_RowVersionMigration.Designer.cs" />
+  </ItemGroup>
+
 </Project>

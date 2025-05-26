@@ -5,6 +5,7 @@ import {Button, Card, CardBody, CardText, CardTitle, Input, InputGroup} from "re
 import {getAllCommentsByDiscussionId, Comment, createComment, CommentSchema} from "../api/commentApi.ts";
 import {formatDistanceToNow} from "date-fns";
 import EditDiscussionModal from "./EditDiscussionModal.tsx";
+import {ToastContainer} from "react-toastify";
 import axiosInstance from "../api/axiosInstance.ts";
 
 const DiscussionDetails = () => {
@@ -97,6 +98,8 @@ const DiscussionDetails = () => {
                                  setDiscussion={setDiscussion}
                                  userId={userId}
             />
+
+            <ToastContainer/>
         </>
     );
 }

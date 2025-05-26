@@ -64,6 +64,7 @@ public class CommentService : ICommentService
 
         commentToUpdate.Content = comment.Content;
         commentToUpdate.DiscussionId = comment.DiscussionId;
+        commentToUpdate.Version++;
 
         _commentRepository.Update(commentToUpdate);
         await _commentRepository.SaveChangesAsync();

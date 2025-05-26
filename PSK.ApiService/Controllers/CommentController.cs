@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting.Schema;
 using PSK.ApiService.Services.Interfaces;
 using PSK.ServiceDefaults.DTOs;
@@ -74,6 +75,11 @@ public class CommentController : ControllerBase
             CommentDTO updatedComment = await _commentService.UpdateCommentAsync(comment, userId);
             Log.Information("Comment updated successfully. Comment ID: {CommentId}, Data: {@CommentDTO}", comment.Id, comment);
             return Ok(updatedComment);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            Log.Warning("Concurrency conflict when updating comment {CommentId}: {Message}", comment.Id, ex.Message);
+            return Conflict("The record was modified by another user, update canceled");
         }
         catch (Exception ex)
         {

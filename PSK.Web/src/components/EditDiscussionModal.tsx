@@ -1,7 +1,8 @@
 ﻿import {Button, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 import {Discussion, updateDiscussion} from "../api/discussionApi.ts";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {useParams} from "react-router-dom";
+import {toast} from "react-toastify";
 
 interface EditDiscussionModalProps {
     userId: string;
@@ -13,15 +14,16 @@ interface EditDiscussionModalProps {
 const EditDiscussionModal = ({ isOpen, setOpen, setDiscussion, userId }: EditDiscussionModalProps) => {
     const {id} = useParams<{ id: string }>();
     const [discussionName, setDiscussionName] = useState<string>("");
+    const pendingDiscussion = useRef<Discussion | null>(null);
 
     const handleCancel = () => {
         setOpen(false);
         setDiscussionName("");
-    }
+    };
 
     const handleSubmit = () => {
         if (!id || discussionName.length === 0) {
-            window.alert("Please enter a valid discussion name");
+            toast.error("Please enter a valid discussion name");
             return;
         }
 
@@ -39,7 +41,7 @@ const EditDiscussionModal = ({ isOpen, setOpen, setDiscussion, userId }: EditDis
 
     return (
         <Modal isOpen={isOpen} onClose={handleCancel}>
-            <ModalHeader>Update discussion</ModalHeader>
+            <ModalHeader toggle={handleCancel}>Update discussion</ModalHeader>
             <ModalBody>
                 <FormGroup>
                     <Label>Name</Label>
@@ -54,6 +56,6 @@ const EditDiscussionModal = ({ isOpen, setOpen, setDiscussion, userId }: EditDis
             </ModalFooter>
         </Modal>
     );
-}
+};
 
 export default EditDiscussionModal;
